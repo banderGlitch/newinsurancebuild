@@ -1,12 +1,12 @@
 // src/services/metamask.ts
-import { MetaMaskInpageProvider } from '@metamask/providers';
+// import { MetaMaskInpageProvider } from '@metamask/providers';
 // import detectEthereumProvider from '@metamask/detect-provider';
 
-declare global {
-  interface Window {
-    ethereum?: MetaMaskInpageProvider;
-  }
-}
+// declare global {
+//   interface Window {
+//     ethereum?: MetaMaskInpageProvider;
+//   }
+// }
 
 export const connectWallet = async (): Promise<string[] | null> => {
   try {
