@@ -21,7 +21,7 @@ function App() {
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [walletProvider, setWalletProvider] = useState<any>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const { VITE_TELEGRAM_BOT_NAME = "LitDevGuidesBot", VITE_TELEGRAM_BOT_SECRET, } = import.meta.env as unknown as EnvVariables;
+  const { VITE_TELEGRAM_BOT_NAME = "LitDevGuidesBot" } = import.meta.env as unknown as EnvVariables;
 
   const handleTelegramResponse = async (user: TelegramUser) => {
     if (user && typeof user === 'object') {
