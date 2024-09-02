@@ -14,7 +14,7 @@
     "@lit-protocol/contracts-sdk": "^6.4.4",
     "@lit-protocol/lit-node-client": "^6.4.4",
     "bs58": "^6.0.0",
-    "ethers": "v5",
+    "ethers": "^5.7.2",
     "ipfs-only-hash": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
