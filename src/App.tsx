@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import WalletConnect from './WalletConnect';
 import InsuranceForm from './InsuranceForm';
 import TelegramLoginButton from './TelegramLoginButton';
