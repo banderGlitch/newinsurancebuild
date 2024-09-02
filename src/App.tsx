@@ -2,15 +2,16 @@ import { useState } from 'react';
 import WalletConnect from './WalletConnect';
 import InsuranceForm from './InsuranceForm';
 import TelegramLoginButton from './TelegramLoginButton';
+import { type TelegramUser } from "./types";
 
-interface TelegramUser {
-  id: number;
-  first_name: string;
-  last_name: string;
-  username: string;
-  auth_date: number;
-  hash: string;
-}
+// interface TelegramUser {
+//   id: number;
+//   first_name: string;
+//   last_name: string;
+//   username: string;
+//   auth_date: number;
+//   hash: string;
+// }
 
 interface EnvVariables {
   VITE_TELEGRAM_BOT_NAME: string;
