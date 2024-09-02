@@ -3,6 +3,7 @@ import WalletConnect from './WalletConnect';
 import InsuranceForm from './InsuranceForm';
 import TelegramLoginButton from './TelegramLoginButton';
 import { type TelegramUser } from "./types";
+import { MetaMaskProvider } from "@metamask/sdk-react";
 
 // interface TelegramUser {
 //   id: number;
@@ -52,6 +53,17 @@ function App() {
 
   return (
     <div>
+      <MetaMaskProvider
+      debug={false}
+      sdkOptions={{
+        dappMetadata: {
+          name: "telegramapp",
+          url: window.location.href,
+        },
+        // infuraAPIKey: process.env.INFURA_API_KEY,
+        // Other options.
+      }}
+    >
       {!telegramUser ? (
         // Step 1: Prompt user to log in via Telegram
         <div className="bg-gray-100 flex justify-center items-center min-h-screen">
@@ -76,6 +88,7 @@ function App() {
         // Step 3: If both Telegram login and MetaMask wallet connection are successful, show the InsuranceForm
         <InsuranceForm />
       )}
+      </MetaMaskProvider>
     </div>
   );
 }
