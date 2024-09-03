@@ -1,20 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './OutletApp/TelegramAuth';
 import PrivateRoute from './_helpers/PrivateRoute';
 import { type TelegramUser } from './types';
+import TabNavigation from './components/TabNavigation';
+import Wallet from './components/Wallet';
+import User from './components/User';
+import Insurer from './components/Insurer';
+import Logout from './components/Logout';
 
-// interface EnvVariables {
-//   VITE_TELEGRAM_BOT_NAME: string;
-//   VITE_TELEGRAM_BOT_SECRET: string;
-// }
 
 function App() {
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
-  // const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  // const { VITE_TELEGRAM_BOT_NAME = 'LitDevGuidesBot' } = import.meta.env as unknown as EnvVariables;
+
 
   const handleTelegramResponse = async (user: TelegramUser) => {
     if (user && typeof user === 'object') {
@@ -38,77 +39,66 @@ function App() {
     }
   };
 
-  // useEffect(() => {
-  //   const checkMobile = () => {
-  //     setIsMobile(window.innerWidth <= 768); // Adjust the width threshold as needed
-  //   };
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768); // Adjust the width threshold as needed
+    };
 
-  //   checkMobile();
-  //   window.addEventListener('resize', checkMobile);
-  //   return () => window.removeEventListener('resize', checkMobile);
-  // }, []);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
-    <Router>
-    <Routes>
-      {/* Public route for Telegram login */}
-      <Route
-        path="/login"
-        element={
-          <LoginPage
-            handleTelegramResponse={handleTelegramResponse}
-            validationError={validationError}
-          // <div className="bg-gray-100 flex justify-center items-center min-h-screen">
-          //   <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
-          //     <h2 className="text-2xl font-bold mb-4">Authenticate with Telegram</h2>
-          //     <TelegramLoginButton
-          //       botName={VITE_TELEGRAM_BOT_NAME}
-          //       dataOnauth={handleTelegramResponse}
-          //       buttonSize="large"
-          //     />
-          //     {validationError && (
-          //       <div className="error-message">
-          //         <p>{validationError}</p>
-          //       </div>
-          //     )}
-          //   </div>
-          // </div>
-          />
-        }
-      />
+    //   <Router>
+    //   <Routes>
+    //     {/* Public route for Telegram login */}
+    //     <Route
+    //       path="/login"
+    //       element={
+    //         <LoginPage
+    //           handleTelegramResponse={handleTelegramResponse}
+    //           validationError={validationError}
+    //         />
+    //       }
+    //     />
 
-      {/* Protected route for main app */}
-      <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-        {/* <Route path="/" element={<InsuranceForm telegramUser={telegramUser} />} /> */}
-        {/* <Route path="/wallet" element={<Wallet />} />
+    //     {/* Protected route for main app */}
+    //     <Route element={<PrivateRoute telegramUser={telegramUser} />}>
+    //       {/* <Route path="/wallet" element={<Wallet />} />
+    //           <Route path="/user" element={<User />} />
+    //           <Route path="/insurer" element={<Insurer />} />
+    //           <Route path="/logout" element={<Logout />} />
+    //           <Route path="/" element={<Wallet />} /> {/* Default to Wallet */}
+    //     </Route> */
+    //   </Routes>
+    // </Router>
+    isMobile && (
+      <Router>
+        <Routes>
+          {/* Public route for Telegram login */}
+          <Route
+            path="/login"
+            element={
+              <LoginPage
+                handleTelegramResponse={handleTelegramResponse}
+                validationError={validationError}
+              />
+            }
+          />
+
+          {/* Protected route for main app */}
+          <Route element={<PrivateRoute telegramUser={telegramUser} />}>
             <Route path="/user" element={<User />} />
             <Route path="/insurer" element={<Insurer />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/" element={<Wallet />} /> {/* Default to Wallet */}
-      </Route> */
-    </Routes>
-  </Router>
-    // isMobile && (
-    //   <Router>
-    //     <Routes>
-    //       {/* Public route for Telegram login */}
-    //       <Route
-    //         path="/login"
-    //         element={
-    //           <LoginPage
-    //             handleTelegramResponse={handleTelegramResponse}
-    //             validationError={validationError}
-    //           />
-    //         }
-    //       />
-
-    //       {/* Protected route for main app */}
-    //       <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-    //         <Route path="/" element={<InsuranceForm telegramUser={telegramUser!} />} />
-    //       </Route>
-    //     </Routes>
-    //   </Router>
-    // )
+            <Route path="/" element={<Wallet />} /> 
+          </Route>
+        </Routes>
+         {/* Tab Navigation displayed at the bottom */}
+         {telegramUser && <TabNavigation />}
+      </Router>
+    )
   );
 }
 
