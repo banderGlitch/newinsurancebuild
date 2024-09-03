@@ -50,36 +50,7 @@ function App() {
   }, []);
 
 
-  // useEffect(() => {
-  //   if (telegramUser) {
-  //     navigate('/');
-  //   }
-  // }, [telegramUser, navigate]);
-
   return (
-    //   <Router>
-    //   <Routes>
-    //     {/* Public route for Telegram login */}
-    //     <Route
-    //       path="/login"
-    //       element={
-    //         <LoginPage
-    //           handleTelegramResponse={handleTelegramResponse}
-    //           validationError={validationError}
-    //         />
-    //       }
-    //     />
-
-    //     {/* Protected route for main app */}
-    //     <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-    //       {/* <Route path="/wallet" element={<Wallet />} />
-    //           <Route path="/user" element={<User />} />
-    //           <Route path="/insurer" element={<Insurer />} />
-    //           <Route path="/logout" element={<Logout />} />
-    //           <Route path="/" element={<Wallet />} /> {/* Default to Wallet */}
-    //     </Route> */
-    //   </Routes>
-    // </Router>
     isMobile && (
       <Router>
         <Routes>
@@ -94,7 +65,6 @@ function App() {
               />
             }
           />
-
           {/* Protected route for main app */}
           <Route element={<PrivateRoute telegramUser={telegramUser} />}>
             <Route path="/user" element={<User />} />
@@ -103,7 +73,6 @@ function App() {
             <Route path="/" element={<Wallet />} /> 
           </Route>
         </Routes>
-         {/* Tab Navigation displayed at the bottom */}
          {telegramUser && <TabNavigation />}
       </Router>
     )

@@ -5,8 +5,7 @@ const Logout: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Perform logout logic here
-    navigate('/login'); // Redirect to login page after logout
+    navigate('/login'); 
   }, [navigate]);
 
   return (
