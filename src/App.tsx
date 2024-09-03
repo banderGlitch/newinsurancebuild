@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import InsuranceForm from './InsuranceForm';
-// import TelegramLoginButton from './TelegramLoginButton';
 import LoginPage from './OutletApp/TelegramAuth';
 import PrivateRoute from './_helpers/PrivateRoute';
 import { type TelegramUser } from './types';
