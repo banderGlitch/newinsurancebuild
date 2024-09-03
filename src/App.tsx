@@ -51,8 +51,29 @@ function App() {
 
 
   return (
+      // <Router>
+      //   <Routes>
+      //     <Route
+      //       path="/login"
+      //       element={
+      //         <LoginPage
+      //           handleTelegramResponse={handleTelegramResponse}
+      //           validationError={validationError}
+      //           telegramUser = {telegramUser}
+      //         />
+      //       }
+      //     />
+      //       <Route path="/user" element={<User />} />
+      //       <Route path="/insurer" element={<Insurer />} />
+      //       <Route path="/logout" element={<Logout />} />
+      //       <Route path="/" element={<Wallet />} /> 
+      //   </Routes>
+      //   <TabNavigation />
+      // </Router>
+    isMobile && (
       <Router>
         <Routes>
+          {/* Public route for Telegram login */}
           <Route
             path="/login"
             element={
@@ -63,38 +84,17 @@ function App() {
               />
             }
           />
+          {/* Protected route for main app */}
+          <Route element={<PrivateRoute telegramUser={telegramUser} />}>
             <Route path="/user" element={<User />} />
             <Route path="/insurer" element={<Insurer />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/" element={<Wallet />} /> 
+          </Route>
         </Routes>
-        <TabNavigation />
+         {telegramUser && <TabNavigation />}
       </Router>
-    // isMobile && (
-    //   <Router>
-    //     <Routes>
-    //       {/* Public route for Telegram login */}
-    //       <Route
-    //         path="/login"
-    //         element={
-    //           <LoginPage
-    //             handleTelegramResponse={handleTelegramResponse}
-    //             validationError={validationError}
-    //             telegramUser = {telegramUser}
-    //           />
-    //         }
-    //       />
-    //       {/* Protected route for main app */}
-    //       <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-    //         <Route path="/user" element={<User />} />
-    //         <Route path="/insurer" element={<Insurer />} />
-    //         <Route path="/logout" element={<Logout />} />
-    //         <Route path="/" element={<Wallet />} /> 
-    //       </Route>
-    //     </Routes>
-    //      {telegramUser && <TabNavigation />}
-    //   </Router>
-    // )
+    )
    )
 }
 
