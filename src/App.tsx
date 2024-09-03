@@ -51,6 +51,25 @@ function App() {
 
 
   return (
+      // <Router>
+      //   <Routes>
+      //     <Route
+      //       path="/login"
+      //       element={
+      //         <LoginPage
+      //           handleTelegramResponse={handleTelegramResponse}
+      //           validationError={validationError}
+      //           telegramUser = {telegramUser}
+      //         />
+      //       }
+      //     />
+      //       <Route path="/user" element={<User />} />
+      //       <Route path="/insurer" element={<Insurer />} />
+      //       <Route path="/logout" element={<Logout />} />
+      //       <Route path="/" element={<Wallet />} /> 
+      //   </Routes>
+      //   <TabNavigation />
+      // </Router>
     isMobile && (
       <Router>
         <Routes>
@@ -76,7 +95,7 @@ function App() {
          {telegramUser && <TabNavigation />}
       </Router>
     )
-  );
+   )
 }
 
 export default App;

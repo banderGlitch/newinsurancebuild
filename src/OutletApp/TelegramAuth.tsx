@@ -26,7 +26,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleTelegramResponse, validatio
   }, [telegramUser, navigate]);
 
   return (
-    <div className="bg-gray-100 flex flex-col justify-between items-center min-h-screen p-6">
+    <div className="flex flex-col justify-between items-center min-h-screen p-6">
       {/* Top Section with Logo */}
       <div className="w-full flex justify-center mt-8">
         <img src={InsuranceLogo} alt="Car Insurance Logo" className="w-16 h-16" />
@@ -53,9 +53,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleTelegramResponse, validatio
       </div>
 
       {/* Bottom Section with Powered by Lit Protocol */}
-      <div className="w-full text-center mb-4">
-        <p className="text-sm text-gray-500">Powered by</p>
-        <img src={litProtocolLogo} alt="Lit Protocol Logo" className="w-16 h-6 mx-auto mt-2" />
+      <div className="w-full text-center mb-4 flex items-center justify-center flex-row">
+        <p className="text-sm text-gray-500 mr-2">Powered by</p>
+        <img src={litProtocolLogo} alt="Lit Protocol Logo" className="h-6" 
+         style={{ height: '30px', width: 'auto' }} 
+          /> 
       </div>
     </div>
   );
