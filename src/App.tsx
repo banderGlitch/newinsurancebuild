@@ -51,42 +51,61 @@ function App() {
   }, []);
 
   return (
-    isMobile && (
-      <Router>
-        <Routes>
-          {/* Public route for Telegram login */}
-          <Route
-            path="/login"
-            element={
-              <LoginPage
-                handleTelegramResponse={handleTelegramResponse}
-                validationError={validationError}
-              // <div className="bg-gray-100 flex justify-center items-center min-h-screen">
-              //   <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
-              //     <h2 className="text-2xl font-bold mb-4">Authenticate with Telegram</h2>
-              //     <TelegramLoginButton
-              //       botName={VITE_TELEGRAM_BOT_NAME}
-              //       dataOnauth={handleTelegramResponse}
-              //       buttonSize="large"
-              //     />
-              //     {validationError && (
-              //       <div className="error-message">
-              //         <p>{validationError}</p>
-              //       </div>
-              //     )}
-              //   </div>
-              // </div>
-              />
-            }
+    <Router>
+    <Routes>
+      {/* Public route for Telegram login */}
+      <Route
+        path="/login"
+        element={
+          <LoginPage
+            handleTelegramResponse={handleTelegramResponse}
+            validationError={validationError}
+          // <div className="bg-gray-100 flex justify-center items-center min-h-screen">
+          //   <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
+          //     <h2 className="text-2xl font-bold mb-4">Authenticate with Telegram</h2>
+          //     <TelegramLoginButton
+          //       botName={VITE_TELEGRAM_BOT_NAME}
+          //       dataOnauth={handleTelegramResponse}
+          //       buttonSize="large"
+          //     />
+          //     {validationError && (
+          //       <div className="error-message">
+          //         <p>{validationError}</p>
+          //       </div>
+          //     )}
+          //   </div>
+          // </div>
           />
+        }
+      />
 
-          {/* Protected route for main app */}
-          <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-            <Route path="/" element={<InsuranceForm telegramUser={telegramUser!} />} />
-          </Route>
-        </Routes>
-      </Router>
-    )
+      {/* Protected route for main app */}
+      <Route element={<PrivateRoute telegramUser={telegramUser} />}>
+        <Route path="/" element={<InsuranceForm telegramUser={telegramUser!} />} />
+      </Route>
+    </Routes>
+  </Router>
+    // isMobile && (
+    //   <Router>
+    //     <Routes>
+    //       {/* Public route for Telegram login */}
+    //       <Route
+    //         path="/login"
+    //         element={
+    //           <LoginPage
+    //             handleTelegramResponse={handleTelegramResponse}
+    //             validationError={validationError}
+    //           />
+    //         }
+    //       />
+
+    //       {/* Protected route for main app */}
+    //       <Route element={<PrivateRoute telegramUser={telegramUser} />}>
+    //         <Route path="/" element={<InsuranceForm telegramUser={telegramUser!} />} />
+    //       </Route>
+    //     </Routes>
+    //   </Router>
+    // )
   );
 }
 
