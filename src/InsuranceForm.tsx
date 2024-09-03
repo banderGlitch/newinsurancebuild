@@ -18,6 +18,7 @@ interface InsuranceFormProps {
 
 const InsuranceForm: React.FC<InsuranceFormProps> = ({telegramUser}) => {
   console.log("telegramuser--------------", telegramUser)
+  console.log("telegramuser--------------", telegramUser)
   const [insuranceAmount, setInsuranceAmount] = useState<string>('');
   const [carMake, setCarMake] = useState<string>('');
   

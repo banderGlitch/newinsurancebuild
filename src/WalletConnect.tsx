@@ -1,53 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { connectWallet, getCurrentAccount } from '../src/services/metamask';
+// import React, { useState, useEffect } from 'react';
+// import { connectWallet, getCurrentAccount } from '../src/services/metamask';
 
-interface WalletConnectProps {
-  onConnect: (provider: any) => void;
-}
+// interface WalletConnectProps {
+//   onConnect: (provider: any) => void;
+// }
 
-const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
-  const [account, setAccount] = useState<string | null>(null);
+// const WalletConnect: React.FC<WalletConnectProps> = ({ onConnect }) => {
+//   const [account, setAccount] = useState<string | null>(null);
 
-  useEffect(() => {
-    checkConnection();
-  }, []);
+//   useEffect(() => {
+//     checkConnection();
+//   }, []);
 
-  const checkConnection = async () => {
-    const account = await getCurrentAccount();
-    if (account) {
-      setAccount(account);
-      onConnect(account);
-    }
-  };
+//   const checkConnection = async () => {
+//     const account = await getCurrentAccount();
+//     if (account) {
+//       setAccount(account);
+//       onConnect(account);
+//     }
+//   };
 
-  const handleConnect = async () => {
-    const accounts = await connectWallet();
-    if (accounts && accounts.length > 0) {
-      setAccount(accounts[0]);
-      onConnect(accounts[0]);
-    }
-  };
+//   const handleConnect = async () => {
+//     const accounts = await connectWallet();
+//     if (accounts && accounts.length > 0) {
+//       setAccount(accounts[0]);
+//       onConnect(accounts[0]);
+//     }
+//   };
 
-  if (account) {
-    return null;
-  }
+//   if (account) {
+//     return null;
+//   }
 
-  return (
-    <div className="bg-gray-100 flex justify-center items-center min-h-screen">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
-        <h2 className="text-2xl font-bold mb-4">Connect to MetaMask</h2>
-        <button
-          onClick={handleConnect}
-          className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600"
-        >
-          Connect MetaMask
-        </button>
-      </div>
-    </div>
-  );
-};
+//   return (
+//     <div className="bg-gray-100 flex justify-center items-center min-h-screen">
+//       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
+//         <h2 className="text-2xl font-bold mb-4">Connect to MetaMask</h2>
+//         <button
+//           onClick={handleConnect}
+//           className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600"
+//         >
+//           Connect MetaMask
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 
-export default WalletConnect;
+// export default WalletConnect;
 // import React, { useState, useEffect } from 'react';
 // import { ethers } from 'ethers';
 
