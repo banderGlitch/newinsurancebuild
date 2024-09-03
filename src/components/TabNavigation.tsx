@@ -7,7 +7,7 @@ const TabNavigation: React.FC = () => {
     <div className="absolute bottom-[-4%] left-0 right-0 w-full flex justify-around bg-gray-800 shadow-md shadow-md">
       <div className="flex justify-around p-2 w-full">
         <NavLink
-          to="/wallet"
+          to="/"
           className={({ isActive }) =>
             isActive ? 'flex flex-col items-center text-blue-500' : 'flex flex-col items-center text-gray-500'
           }
@@ -22,7 +22,7 @@ const TabNavigation: React.FC = () => {
           }
         >
           <FaUser size={24} />
-          <span className="text-sm">User</span>
+          <span className="text-sm">Insuree</span>
         </NavLink>
         <NavLink
           to="/insurer"
