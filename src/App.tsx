@@ -34,7 +34,7 @@ function App() {
         );
       } else {
         setValidationError(null);
-        navigate('/wallet');
+        // navigate('/wallet');
       }
     } else {
       setValidationError('Invalid user data received. Please try again.');
@@ -50,6 +50,13 @@ function App() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+  
+
+  useEffect(() => {
+    if (telegramUser) {
+      navigate('/');
+    }
+  }, [telegramUser, navigate]);
 
   return (
     //   <Router>
