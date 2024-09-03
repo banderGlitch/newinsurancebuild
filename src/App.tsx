@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route , useNavigate } from 'react-router-dom';
 import LoginPage from './OutletApp/TelegramAuth';
 import PrivateRoute from './_helpers/PrivateRoute';
 import { type TelegramUser } from './types';
@@ -14,6 +14,7 @@ function App() {
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const navigate = useNavigate();
 
 
 
@@ -33,6 +34,7 @@ function App() {
         );
       } else {
         setValidationError(null);
+        navigate('/wallet');
       }
     } else {
       setValidationError('Invalid user data received. Please try again.');
