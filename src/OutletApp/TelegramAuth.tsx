@@ -21,7 +21,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ handleTelegramResponse, validatio
 
   useEffect(() => {
     if (telegramUser) {
-      navigate('/wallet'); // Navigate to wallet after successful login
+      navigate('/'); // Navigate to wallet after successful login
     }
   }, [telegramUser, navigate]);
 
