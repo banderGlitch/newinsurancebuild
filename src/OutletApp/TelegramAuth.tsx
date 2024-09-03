@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TelegramLoginButton from '../TelegramLoginButton';
 import InsuranceLogo from '../assets/insurance.png'
 import litProtocolLogo from '../assets/litprotocol.png'; // Make sure to have this asset
+import { type TelegramUser } from '../types';
 
 interface EnvVariables {
   VITE_TELEGRAM_BOT_NAME: string;
@@ -10,10 +12,18 @@ interface EnvVariables {
 interface LoginPageProps {
   handleTelegramResponse: (user: any) => void;
   validationError: string | null;
+  telegramUser: TelegramUser | null; // Add this prop
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ handleTelegramResponse, validationError }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ handleTelegramResponse, validationError, telegramUser }) => {
   const { VITE_TELEGRAM_BOT_NAME = 'LitDevGuidesBot' } = import.meta.env as unknown as EnvVariables;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (telegramUser) {
+      navigate('/wallet'); // Navigate to wallet after successful login
+    }
+  }, [telegramUser, navigate]);
 
   return (
     <div className="bg-gray-100 flex flex-col justify-between items-center min-h-screen p-6">
