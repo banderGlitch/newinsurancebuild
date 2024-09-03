@@ -81,8 +81,13 @@ function App() {
 
       {/* Protected route for main app */}
       <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-        <Route path="/" element={<InsuranceForm telegramUser={telegramUser!} />} />
-      </Route>
+        {/* <Route path="/" element={<InsuranceForm telegramUser={telegramUser} />} /> */}
+        {/* <Route path="/wallet" element={<Wallet />} />
+            <Route path="/user" element={<User />} />
+            <Route path="/insurer" element={<Insurer />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/" element={<Wallet />} /> {/* Default to Wallet */}
+      </Route> */
     </Routes>
   </Router>
     // isMobile && (
