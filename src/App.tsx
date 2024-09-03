@@ -59,7 +59,7 @@ function App() {
           </div>
         </div>
       ) :  (
-        <InsuranceForm />
+        <InsuranceForm telegramUser = {telegramUser} />
       )}
     </div>
   );

@@ -1,6 +1,23 @@
 import React, { useState } from 'react';
 
-const InsuranceForm: React.FC = () => {
+
+
+interface TelegramUser {
+  auth_date: number;
+  first_name: string
+  hash :string;
+  id: number;
+  last_name?: string;
+  username?:string
+}
+
+interface InsuranceFormProps {
+  telegramUser: TelegramUser;
+}
+
+
+const InsuranceForm: React.FC<InsuranceFormProps> = ({telegramUser}) => {
+  console.log("telegramuser--------------", telegramUser)
   const [insuranceAmount, setInsuranceAmount] = useState<string>('');
   const [carMake, setCarMake] = useState<string>('');
   
