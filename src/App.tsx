@@ -1,25 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import InsuranceForm from './InsuranceForm';
-import TelegramLoginButton from './TelegramLoginButton';
-import { type TelegramUser } from "./types";
+// import TelegramLoginButton from './TelegramLoginButton';
+import LoginPage from './OutletApp/TelegramAuth';
+import PrivateRoute from './_helpers/PrivateRoute';
+import { type TelegramUser } from './types';
 
-interface EnvVariables {
-  VITE_TELEGRAM_BOT_NAME: string;
-  VITE_TELEGRAM_BOT_SECRET: string;
-}
+// interface EnvVariables {
+//   VITE_TELEGRAM_BOT_NAME: string;
+//   VITE_TELEGRAM_BOT_SECRET: string;
+// }
 
 function App() {
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const { VITE_TELEGRAM_BOT_NAME = "LitDevGuidesBot" } = import.meta.env as unknown as EnvVariables;
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  // const { VITE_TELEGRAM_BOT_NAME = 'LitDevGuidesBot' } = import.meta.env as unknown as EnvVariables;
 
   const handleTelegramResponse = async (user: TelegramUser) => {
     if (user && typeof user === 'object') {
       setTelegramUser(user);
 
       // Add your Telegram validation logic here
-      const isValid = true;
-      const isRecent = true;
+      const isValid = true; // Replace with actual validation logic
+      const isRecent = true; // Replace with actual time check
 
       if (!isValid || !isRecent) {
         setValidationError(
@@ -35,37 +40,128 @@ function App() {
     }
   };
 
-  // const handleWalletConnect = (provider: any) => {
-  //   setWalletProvider(provider);
-  // };
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768); // Adjust the width threshold as needed
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
-    <div>
-      {!telegramUser ? (
-        // Step 1: Prompt user to log in via Telegram
-        <div className="bg-gray-100 flex justify-center items-center min-h-screen">
-          <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
-            <h2 className="text-2xl font-bold mb-4">Authenticate with Telegram</h2>
-            <TelegramLoginButton
-              botName={ VITE_TELEGRAM_BOT_NAME}
-              dataOnauth={handleTelegramResponse}
-              buttonSize="large"
-            />
-            {validationError && (
-              <div className="error-message">
-                <p>{validationError}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      ) :  (
-        <InsuranceForm telegramUser = {telegramUser} />
-      )}
-    </div>
+    isMobile && (
+      <Router>
+        <Routes>
+          {/* Public route for Telegram login */}
+          <Route
+            path="/login"
+            element={
+              <LoginPage
+                handleTelegramResponse={handleTelegramResponse}
+                validationError={validationError}
+              // <div className="bg-gray-100 flex justify-center items-center min-h-screen">
+              //   <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
+              //     <h2 className="text-2xl font-bold mb-4">Authenticate with Telegram</h2>
+              //     <TelegramLoginButton
+              //       botName={VITE_TELEGRAM_BOT_NAME}
+              //       dataOnauth={handleTelegramResponse}
+              //       buttonSize="large"
+              //     />
+              //     {validationError && (
+              //       <div className="error-message">
+              //         <p>{validationError}</p>
+              //       </div>
+              //     )}
+              //   </div>
+              // </div>
+              />
+            }
+          />
+
+          {/* Protected route for main app */}
+          <Route element={<PrivateRoute telegramUser={telegramUser} />}>
+            <Route path="/" element={<InsuranceForm telegramUser={telegramUser!} />} />
+          </Route>
+        </Routes>
+      </Router>
+    )
   );
 }
 
 export default App;
+
+
+
+// import { useState } from 'react';
+// import InsuranceForm from './InsuranceForm';
+// import TelegramLoginButton from './TelegramLoginButton';
+// import { type TelegramUser } from "./types";
+
+// interface EnvVariables {
+//   VITE_TELEGRAM_BOT_NAME: string;
+//   VITE_TELEGRAM_BOT_SECRET: string;
+// }
+
+// function App() {
+//   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
+//   const [validationError, setValidationError] = useState<string | null>(null);
+//   const { VITE_TELEGRAM_BOT_NAME = "LitDevGuidesBot" } = import.meta.env as unknown as EnvVariables;
+
+//   const handleTelegramResponse = async (user: TelegramUser) => {
+//     if (user && typeof user === 'object') {
+//       setTelegramUser(user);
+
+//       // Add your Telegram validation logic here
+//       const isValid = true;
+//       const isRecent = true;
+
+//       if (!isValid || !isRecent) {
+//         setValidationError(
+//           !isValid
+//             ? 'Failed to validate Telegram user info. Please try again.'
+//             : 'Authentication has expired. Please log in again.'
+//         );
+//       } else {
+//         setValidationError(null);
+//       }
+//     } else {
+//       setValidationError('Invalid user data received. Please try again.');
+//     }
+//   };
+
+//   // const handleWalletConnect = (provider: any) => {
+//   //   setWalletProvider(provider);
+//   // };
+
+//   return (
+//     <div>
+//       {!telegramUser ? (
+//         // Step 1: Prompt user to log in via Telegram
+//         <div className="bg-gray-100 flex justify-center items-center min-h-screen">
+//           <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 text-center">
+//             <h2 className="text-2xl font-bold mb-4">Authenticate with Telegram</h2>
+//             <TelegramLoginButton
+//               botName={ VITE_TELEGRAM_BOT_NAME}
+//               dataOnauth={handleTelegramResponse}
+//               buttonSize="large"
+//             />
+//             {validationError && (
+//               <div className="error-message">
+//                 <p>{validationError}</p>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       ) :  (
+//         <InsuranceForm telegramUser = {telegramUser} />
+//       )}
+//     </div>
+//   );
+// }
+
+// export default App;
 
 
 // import { useState, useEffect, useCallback } from "react";
