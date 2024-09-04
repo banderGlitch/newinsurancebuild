@@ -54,71 +54,71 @@ function App() {
 
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/login"
-          element={
-            <LoginPage
-              handleTelegramResponse={handleTelegramResponse}
-              validationError={validationError}
-              telegramUser = {telegramUser}
-            />
-          }
-        />
-        <Route
-        path="/wallet-connect"
-        element={
-          <WalletConnectPage
-            telegramUser={telegramUser?.first_name || 'User'}
-            setWalletStatus = {setWalletStatus}
-          />
-        }
-      />
-          <Route path="/user" element={<User />} />
-          <Route path="/insurer" element={<Insurer />} />
-          <Route path="/logout" element={<Logout />} />
-            <Route path='/newpolicy' element={<NewPolicy/>}/>
-          <Route path="/" element={<Wallet />} /> 
-      </Routes>
-      <TabNavigation />
-    </Router>
-    // isMobile && (
-    //   <Router>
-    //     <Routes>
-    //       {/* Public route for Telegram login */}
-    //       <Route
-    //         path="/login"
-    //         element={
-    //           <LoginPage
-    //             handleTelegramResponse={handleTelegramResponse}
-    //             validationError={validationError}
-    //             telegramUser={telegramUser}
-    //           />
-    //         }
+    // <Router>
+    //   <Routes>
+    //     <Route
+    //       path="/login"
+    //       element={
+    //         <LoginPage
+    //           handleTelegramResponse={handleTelegramResponse}
+    //           validationError={validationError}
+    //           telegramUser = {telegramUser}
+    //         />
+    //       }
+    //     />
+    //     <Route
+    //     path="/wallet-connect"
+    //     element={
+    //       <WalletConnectPage
+    //         telegramUser={telegramUser?.first_name || 'User'}
+    //         setWalletStatus = {setWalletStatus}
     //       />
-    //       <Route
-    //         path="/wallet-connect"
-    //         element={
-    //           <WalletConnectPage
-    //             telegramUser={telegramUser?.first_name || 'User'}
-    //             setWalletStatus={setWalletStatus}
-    //           />
-    //         }
-    //       />
-
-    //       {/* Protected route for main app */}
-    //       <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-    //         <Route path="/user" element={<User />} />
-    //         <Route path="/insurer" element={<Insurer />} />
-    //         <Route path="/logout" element={<Logout />} />
+    //     }
+    //   />
+    //       <Route path="/user" element={<User />} />
+    //       <Route path="/insurer" element={<Insurer />} />
+    //       <Route path="/logout" element={<Logout />} />
     //         <Route path='/newpolicy' element={<NewPolicy/>}/>
-    //         <Route path="/" element={<Wallet />} />
-    //       </Route>
-    //     </Routes>
-    //     {telegramUser && walletOk && <TabNavigation />}
-    //   </Router>
-    // )
+    //       <Route path="/" element={<Wallet />} /> 
+    //   </Routes>
+    //   <TabNavigation />
+    // </Router>
+    isMobile && (
+      <Router>
+        <Routes>
+          {/* Public route for Telegram login */}
+          <Route
+            path="/login"
+            element={
+              <LoginPage
+                handleTelegramResponse={handleTelegramResponse}
+                validationError={validationError}
+                telegramUser={telegramUser}
+              />
+            }
+          />
+          <Route
+            path="/wallet-connect"
+            element={
+              <WalletConnectPage
+                telegramUser={telegramUser?.first_name || 'User'}
+                setWalletStatus={setWalletStatus}
+              />
+            }
+          />
+
+          {/* Protected route for main app */}
+          <Route element={<PrivateRoute telegramUser={telegramUser} />}>
+            <Route path="/user" element={<User />} />
+            <Route path="/insurer" element={<Insurer />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path='/newpolicy' element={<NewPolicy/>}/>
+            <Route path="/" element={<Wallet />} />
+          </Route>
+        </Routes>
+        {telegramUser && walletOk && <TabNavigation />}
+      </Router>
+    )
   )
 }
 
