@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route  } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './OutletApp/TelegramAuth';
 import PrivateRoute from './_helpers/PrivateRoute';
 import { type TelegramUser } from './types';
@@ -53,34 +53,34 @@ function App() {
 
 
   return (
-      // <Router>
-      //   <Routes>
-      //     <Route
-      //       path="/login"
-      //       element={
-      //         <LoginPage
-      //           handleTelegramResponse={handleTelegramResponse}
-      //           validationError={validationError}
-      //           telegramUser = {telegramUser}
-      //         />
-      //       }
-      //     />
-      //     <Route
-      //     path="/wallet-connect"
-      //     element={
-      //       <WalletConnectPage
-      //         telegramUser={telegramUser?.first_name || 'User'}
-      //         setWalletStatus = {setWalletStatus}
-      //       />
-      //     }
-      //   />
-      //       <Route path="/user" element={<User />} />
-      //       <Route path="/insurer" element={<Insurer />} />
-      //       <Route path="/logout" element={<Logout />} />
-      //       <Route path="/" element={<Wallet />} /> 
-      //   </Routes>
-      //   <TabNavigation />
-      // </Router>
+    // <Router>
+    //   <Routes>
+    //     <Route
+    //       path="/login"
+    //       element={
+    //         <LoginPage
+    //           handleTelegramResponse={handleTelegramResponse}
+    //           validationError={validationError}
+    //           telegramUser = {telegramUser}
+    //         />
+    //       }
+    //     />
+    //     <Route
+    //     path="/wallet-connect"
+    //     element={
+    //       <WalletConnectPage
+    //         telegramUser={telegramUser?.first_name || 'User'}
+    //         setWalletStatus = {setWalletStatus}
+    //       />
+    //     }
+    //   />
+    //       <Route path="/user" element={<User />} />
+    //       <Route path="/insurer" element={<Insurer />} />
+    //       <Route path="/logout" element={<Logout />} />
+    //       <Route path="/" element={<Wallet />} /> 
+    //   </Routes>
+    //   <TabNavigation />
+    // </Router>
     isMobile && (
       <Router>
         <Routes>
@@ -91,22 +91,32 @@ function App() {
               <LoginPage
                 handleTelegramResponse={handleTelegramResponse}
                 validationError={validationError}
-                telegramUser = {telegramUser}
+                telegramUser={telegramUser}
               />
             }
           />
+          <Route
+            path="/wallet-connect"
+            element={
+              <WalletConnectPage
+                telegramUser={telegramUser?.first_name || 'User'}
+                setWalletStatus={setWalletStatus}
+              />
+            }
+          />
+
           {/* Protected route for main app */}
           <Route element={<PrivateRoute telegramUser={telegramUser} />}>
             <Route path="/user" element={<User />} />
             <Route path="/insurer" element={<Insurer />} />
             <Route path="/logout" element={<Logout />} />
-            <Route path="/" element={<Wallet />} /> 
+            <Route path="/" element={<Wallet />} />
           </Route>
         </Routes>
-         {telegramUser && walletOk && <TabNavigation />}
+        {telegramUser && walletOk && <TabNavigation />}
       </Router>
     )
-   )
+  )
 }
 
 export default App;
