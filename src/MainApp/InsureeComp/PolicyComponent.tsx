@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PolicyComponent: React.FC = () => {
+  const navigate = useNavigate()
   return (
     <div className="bg-white p-4 rounded-lg shadow-md w-full flex justify-between items-center border">
     <div className="flex items-center justify-between w-full">
@@ -13,7 +15,7 @@ const PolicyComponent: React.FC = () => {
         <p className="text-sm text-red-500 font-bold">InActive</p>
         {/* Placeholder for the plus icon */}
         <div className="rounded-full bg-gray-300 w-6 h-6 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg onClick={() => navigate("/newpolicy")} xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
         </div>
