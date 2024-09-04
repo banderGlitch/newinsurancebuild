@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import InsuranceIcon from '../components/InsuranceIcon';
 
@@ -9,6 +9,7 @@ interface WalletConnectPageProps {
 }
 
 const WalletConnectPage: React.FC<WalletConnectPageProps> = ({ telegramUser , setWalletStatus }) => {
+  console.log("telegramUser", telegramUser)
 //   const [walletConnected, setWalletConnected] = useState(false);
 //   const [account, setAccount] = useState<string | null>(null);
   const navigate = useNavigate();
