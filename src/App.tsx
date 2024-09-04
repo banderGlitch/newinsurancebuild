@@ -8,11 +8,13 @@ import Wallet from './components/Wallet';
 import User from './components/User';
 import Insurer from './components/Insurer';
 import Logout from './components/Logout';
+import WalletConnectPage from './OutletApp/WalletConnectAuth';
 
 
 function App() {
   const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [walletOk, setWalletStatus] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
 
@@ -63,6 +65,15 @@ function App() {
       //         />
       //       }
       //     />
+      //     <Route
+      //     path="/wallet-connect"
+      //     element={
+      //       <WalletConnectPage
+      //         telegramUser={telegramUser?.first_name || 'User'}
+      //         setWalletStatus = {setWalletStatus}
+      //       />
+      //     }
+      //   />
       //       <Route path="/user" element={<User />} />
       //       <Route path="/insurer" element={<Insurer />} />
       //       <Route path="/logout" element={<Logout />} />
@@ -92,7 +103,7 @@ function App() {
             <Route path="/" element={<Wallet />} /> 
           </Route>
         </Routes>
-         {telegramUser && <TabNavigation />}
+         {telegramUser && walletOk && <TabNavigation />}
       </Router>
     )
    )

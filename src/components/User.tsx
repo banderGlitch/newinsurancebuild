@@ -4,15 +4,17 @@ import VehicleDetailsComponent from '../MainApp/InsureeComp/VehicleDetailsCompon
 import InsuranceIcon from './InsuranceIcon';
 
 
+
 const User: React.FC = () => {
     return (
-        <div className="flex flex-col justify-center items-center p-4  min-h-screen">
+        <div className="flex flex-col justify-center items-center min-h-screen">
             <InsuranceIcon/>
-            <h3 className="text-lg font-bold mb-2 w-full text-left">Policy:</h3>
+            {/* Policy Component */}
             <div className="w-full max-w-lg">
                 <PolicyComponent />
             </div>
-            <h3 className="text-lg font-bold mb-2 w-full text-left mt-6">Vehicle Details:</h3>
+            {/* Vehicle Details Component */}
+            <h3 className="text-lg font-bold mb-2 w-full text-left mt-6">Vehicle Details</h3>
             <div className="w-full max-w-lg">
                 <VehicleDetailsComponent />
             </div>
