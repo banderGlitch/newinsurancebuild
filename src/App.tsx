@@ -154,13 +154,13 @@ const NewPolicyLayout: React.FC = () => {
   );
 };
 
-const ConfirmPay: React.FC = () => {
-  return (
-    <div>
-      <Outlet />
-    </div>
-  );
-};
+// const ConfirmPay: React.FC = () => {
+//   return (
+//     <div>
+//       <Outlet />
+//     </div>
+//   );
+// };
 
 
 
