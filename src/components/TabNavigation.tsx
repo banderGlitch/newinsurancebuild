@@ -1,8 +1,11 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { FaWallet, FaUser, FaShieldAlt, FaSignOutAlt } from 'react-icons/fa'; 
 
 const TabNavigation: React.FC = () => {
+  const location = useLocation();
+  const isUserRouteActive = location.pathname.startsWith('/user');
+
   return (
     <div className="absolute bottom-[-4%] left-0 right-0 w-full flex justify-around bg-gray-800 shadow-md shadow-md">
       <div className="flex justify-around p-2 w-full">
@@ -17,9 +20,7 @@ const TabNavigation: React.FC = () => {
         </NavLink>
         <NavLink
           to="/user"
-          className={({ isActive }) =>
-            isActive ? 'flex flex-col items-center text-blue-500' : 'flex flex-col items-center text-gray-500'
-          }
+          className={isUserRouteActive ? 'flex flex-col items-center text-blue-500' : 'flex flex-col items-center text-gray-500'}
         >
           <FaUser size={24} />
           <span className="text-sm">Insuree</span>
