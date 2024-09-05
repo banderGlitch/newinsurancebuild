@@ -1,9 +1,11 @@
 import React from 'react';
 import InsuranceIcon from '../../components/InsuranceIcon';
 import InsurerTable from './InsurerTable';
+import { useNavigate } from 'react-router-dom';
 
 
 const NewQuotes: React.FC = () => {
+    const navigate = useNavigate()
     const coverage = '200000'
     // const [coverage, setCoverage] = useState<string>('200000');
     
@@ -15,7 +17,7 @@ const NewQuotes: React.FC = () => {
           <InsurerTable coverageLimit={parseInt(coverage)} />
           {/* Confirm & Pay Button */}
           <div className="mt-4  bottom-0 p-4 mt-auto">
-            <button className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
+            <button onClick={() => navigate("confirm&pay")} className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
               Confirm & Pay
             </button>
           </div>

@@ -12,6 +12,7 @@ import WalletConnectPage from './OutletApp/WalletConnectAuth';
 import NewPolicy from './components/NewPolicy';
 import { Outlet } from 'react-router-dom';
 import NewQuotes from './MainApp/NewPolicyComp/NewQuotesComp';
+import ConfirmAndPay from './MainApp/NewPolicyComp/ConfirmAndPay';
 
 
 function App() {
@@ -56,82 +57,84 @@ function App() {
 
 
   return (
-    // <Router>
-    //   <Routes>
-    //     <Route
-    //       path="/login"
-    //       element={
-    //         <LoginPage
-    //           handleTelegramResponse={handleTelegramResponse}
-    //           validationError={validationError}
-    //           telegramUser={telegramUser}
-    //         />
-    //       }
-    //     />
-    //     <Route
-    //       path="/wallet-connect"
-    //       element={
-    //         <WalletConnectPage
-    //           telegramUser={telegramUser?.first_name || 'User'}
-    //           setWalletStatus={setWalletStatus}
-    //         />
-    //       }
-    //     />
-    //     {/* Nested Routes under /user */}
-    //     <Route path="/user" element={<UserLayout />}>
-    //       <Route index element={<User />} />
-    //       <Route path="newpolicy" element={<NewPolicyLayout />}>
-    //         <Route index element={<NewPolicy />} />
-    //         <Route path="newquotes" element={<NewQuotes />} />
-    //       </Route>
-    //     </Route>
-    //     <Route path="/insurer" element={<Insurer />} />
-    //     <Route path="/logout" element={<Logout />} />
-    //     <Route path="/" element={<Wallet />} />
-    //   </Routes>
-    //   <TabNavigation />
-    // </Router>
-    isMobile && (
-      <Router>
-        <Routes>
-          {/* Public route for Telegram login */}
-          <Route
-            path="/login"
-            element={
-              <LoginPage
-                handleTelegramResponse={handleTelegramResponse}
-                validationError={validationError}
-                telegramUser={telegramUser}
-              />
-            }
-          />
-          <Route
-            path="/wallet-connect"
-            element={
-              <WalletConnectPage
-                telegramUser={telegramUser?.first_name || 'User'}
-                setWalletStatus={setWalletStatus}
-              />
-            }
-          />
-
-          {/* Protected route for main app */}
-          <Route element={<PrivateRoute telegramUser={telegramUser} />}>
-            <Route path="/user" element={<UserLayout />}>
-              <Route index element={<User />} />
-              <Route path="newpolicy" element={<NewPolicyLayout />}>
-                <Route index element={<NewPolicy />} />
-                <Route path="newquotes" element={<NewQuotes />} />
-              </Route>
-            </Route>
-            <Route path="/insurer" element={<Insurer />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/" element={<Wallet />} />
+    <Router>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            <LoginPage
+              handleTelegramResponse={handleTelegramResponse}
+              validationError={validationError}
+              telegramUser={telegramUser}
+            />
+          }
+        />
+        <Route
+          path="/wallet-connect"
+          element={
+            <WalletConnectPage
+              telegramUser={telegramUser?.first_name || 'User'}
+              setWalletStatus={setWalletStatus}
+            />
+          }
+        />
+        {/* Nested Routes under /user */}
+        <Route path="/user" element={<UserLayout />}>
+          <Route index element={<User />} />
+          <Route path="newpolicy" element={<NewPolicyLayout />}>
+            <Route index element={<NewPolicy />} />
+            <Route path="newquotes" element={<NewQuotes />} />
+            <Route path="newquotes/confirm&pay" element={<ConfirmAndPay />} />
           </Route>
-        </Routes>
-        {telegramUser && walletOk && <TabNavigation />}
-      </Router>
-    )
+        </Route>
+        <Route path="/insurer" element={<Insurer />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/" element={<Wallet />} />
+      </Routes>
+      <TabNavigation />
+    </Router>
+    // isMobile && (
+    //   <Router>
+    //     <Routes>
+    //       {/* Public route for Telegram login */}
+    //       <Route
+    //         path="/login"
+    //         element={
+    //           <LoginPage
+    //             handleTelegramResponse={handleTelegramResponse}
+    //             validationError={validationError}
+    //             telegramUser={telegramUser}
+    //           />
+    //         }
+    //       />
+    //       <Route
+    //         path="/wallet-connect"
+    //         element={
+    //           <WalletConnectPage
+    //             telegramUser={telegramUser?.first_name || 'User'}
+    //             setWalletStatus={setWalletStatus}
+    //           />
+    //         }
+    //       />
+
+    //       {/* Protected route for main app */}
+    //       <Route element={<PrivateRoute telegramUser={telegramUser} />}>
+    //         <Route path="/user" element={<UserLayout />}>
+    //           <Route index element={<User />} />
+    //           <Route path="newpolicy" element={<NewPolicyLayout />}>
+    //             <Route index element={<NewPolicy />} />
+    //             <Route path="newquotes" element={<NewQuotes />} />
+    //              <Route path="newquotes/confirm&pay" element={<ConfirmAndPay />} />
+    //           </Route>
+    //         </Route>
+    //         <Route path="/insurer" element={<Insurer />} />
+    //         <Route path="/logout" element={<Logout />} />
+    //         <Route path="/" element={<Wallet />} />
+    //       </Route>
+    //     </Routes>
+    //     {telegramUser && walletOk && <TabNavigation />}
+    //   </Router>
+    // )
   )
 }
 
@@ -144,6 +147,14 @@ const UserLayout: React.FC = () => {
 };
 
 const NewPolicyLayout: React.FC = () => {
+  return (
+    <div>
+      <Outlet />
+    </div>
+  );
+};
+
+const ConfirmPay: React.FC = () => {
   return (
     <div>
       <Outlet />
