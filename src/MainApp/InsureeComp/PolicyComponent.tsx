@@ -8,7 +8,7 @@ const PolicyComponent: React.FC = () => {
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center space-x-2">
         <p className="text-sm font-semibold">Policy Id:</p>
-        <p className="text-sm">IL2345</p>
+        <p onClick={() => navigate('createClaim')} className="text-sm">IL2345</p>
       </div>
       <div className="flex items-center space-x-2">
         <p className="text-sm font-semibold">Status:</p>
