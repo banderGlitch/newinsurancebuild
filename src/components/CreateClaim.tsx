@@ -1,37 +1,46 @@
 import React, { useState } from 'react';
 
+// Insurers data
 const insurers = [
-  { id: 'I123', coverage: 2000000 }, // 2 million total coverage
+    { id: 'I123', coverage: 100000 },
+    { id: 'I456', coverage: 100000 },
+  ];
+
+// Initial claims with pre-defined colors
+const initialClaims = [
+  { id: 'C1', amount: 5000, color: 'bg-blue-500' },  // First claim with blue color
+  { id: 'C2', amount: 50000, color: 'bg-purple-500' }, // Second claim with red color
 ];
 
-const initialClaims = [
-  { id: 'C1', amount: 5000, color: 'bg-blue-500' }, // First claim of 5000
-  { id: 'C2', amount: 1000000, color: 'bg-red-500' }, // Second claim of 1 million
-];
+// Colors for the new claims
+const claimColors = ['bg-green-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500'];
 
 const ClaimSubmitPage: React.FC = () => {
-  const [claims, setClaims] = useState(initialClaims);
-  const [newClaim, setNewClaim] = useState<number>(0);
-  const totalCoverage = insurers[0].coverage;
+  const [claims, setClaims] = useState(initialClaims); // Stores the list of claims
+  const [newClaim, setNewClaim] = useState<number>(0); // The value of the new claim
+
+  // Calculate total coverage and used coverage
+  const totalCoverage = insurers.reduce((acc, insurer) => acc + insurer.coverage, 0);
   const usedCoverage = claims.reduce((acc, claim) => acc + claim.amount, 0);
   const remainingCoverage = totalCoverage - usedCoverage;
 
-  // Handle new claim submission
+  // Handle the new claim submission
   const handleNewClaimSubmit = () => {
     if (newClaim > 0 && newClaim <= remainingCoverage) {
+      const nextColor = claimColors[claims.length % claimColors.length]; // Pick the next color for the new claim
       const newClaimEntry = {
         id: `C${claims.length + 1}`,
         amount: newClaim,
-        color: 'bg-green-500', // New claims are indicated in green
+        color: nextColor, // Assign a new color from the list
       };
-      setClaims([...claims, newClaimEntry]);
-      setNewClaim(0);
+      setClaims([...claims, newClaimEntry]); // Add the new claim to the list
+      setNewClaim(0); // Reset the claim input field
     } else {
       alert(`Invalid claim amount. Remaining coverage is $${remainingCoverage.toLocaleString()}`);
     }
   };
 
-  // Calculate width of claims relative to total coverage
+  // Calculate width of each claim relative to total coverage
   const calculateWidth = (amount: number) => {
     return (amount / totalCoverage) * 100;
   };
@@ -77,16 +86,16 @@ const ClaimSubmitPage: React.FC = () => {
 
         {/* Claims Indicator */}
         <div className="relative flex items-center h-10 bg-gray-300 rounded-md overflow-hidden mb-2">
-          {/* Claims on the scale */}
+          {/* Render all claims first */}
           {claims.map((claim) => (
             <div
               key={claim.id}
               className={`${claim.color} h-full border-r border-white`}
-              style={{ width: `${calculateWidth(claim.amount)}%`, minWidth: '10px' }}
+              style={{ width: `${calculateWidth(claim.amount)}%` }}
             />
           ))}
 
-          {/* Remaining coverage */}
+          {/* Remaining coverage in green */}
           {remainingCoverage > 0 && (
             <div
               className="bg-green-500 h-full"
@@ -106,6 +115,334 @@ const ClaimSubmitPage: React.FC = () => {
 };
 
 export default ClaimSubmitPage;
+
+// import React, { useState } from 'react';
+
+// const insurers = [
+//   { id: 'I123', coverage: 2000000 }, // Total coverage is 2 million
+// ];
+
+// const initialClaims = [
+//   { id: 'C1', amount: 5000, color: 'bg-blue-500' },  // First claim of 5000
+//   { id: 'C2', amount: 1000000, color: 'bg-red-500' }, // Second claim of 1 million
+// ];
+
+// const ClaimSubmitPage: React.FC = () => {
+//   const [claims, setClaims] = useState(initialClaims);
+//   const [newClaim, setNewClaim] = useState<number>(0);
+//   const totalCoverage = insurers[0].coverage;
+//   const usedCoverage = claims.reduce((acc, claim) => acc + claim.amount, 0);
+//   const remainingCoverage = totalCoverage - usedCoverage;
+
+//   // Handle new claim submission
+//   const handleNewClaimSubmit = () => {
+//     if (newClaim > 0 && newClaim <= remainingCoverage) {
+//       const newClaimEntry = {
+//         id: `C${claims.length + 1}`,
+//         amount: newClaim,
+//         color: 'bg-green-500', // New claims are indicated in green by default
+//       };
+//       setClaims([...claims, newClaimEntry]);
+//       setNewClaim(0);
+//     } else {
+//       alert(`Invalid claim amount. Remaining coverage is $${remainingCoverage.toLocaleString()}`);
+//     }
+//   };
+
+//   // Calculate width of each claim relative to total coverage
+//   const calculateWidth = (amount: number) => {
+//     return (amount / totalCoverage) * 100;
+//   };
+
+//   return (
+//     <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-gray-100">
+//       {/* Policy and Insurer List */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md mb-6 text-center">
+//         <p className="text-sm font-bold mb-2">Policy Id: I12345</p>
+//         <p className="text-sm">
+//           Insurers: {insurers.map((insurer) => (
+//             <span key={insurer.id}>
+//               <a href="#" className="text-blue-500">{insurer.id}</a>
+//             </span>
+//           ))}
+//         </p>
+//       </div>
+
+//       {/* Submit New Claim */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md mb-6 flex justify-between items-center">
+//         <p className="text-sm font-bold">Submit New Claim</p>
+//         <input
+//           type="number"
+//           value={newClaim}
+//           onChange={(e) => setNewClaim(parseInt(e.target.value))}
+//           className="border p-2 rounded-md text-sm w-20 text-center mr-4"
+//           placeholder="$ Amount"
+//         />
+//         <button
+//           onClick={handleNewClaimSubmit}
+//           className="bg-blue-500 text-white py-2 px-4 rounded-md text-sm"
+//         >
+//           Submit
+//         </button>
+//       </div>
+
+//       {/* Insurance Claims Indicator */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md">
+//         <div className="flex justify-between text-sm mb-2">
+//           <div className="font-bold">Insurers</div>
+//           <div className="font-bold">Claims</div>
+//         </div>
+
+//         {/* Claims Indicator */}
+//         <div className="relative flex items-center h-10 bg-gray-300 rounded-md overflow-hidden mb-2">
+//           {/* Render all claims first */}
+//           {claims.map((claim) => (
+//             <div
+//               key={claim.id}
+//               className={`${claim.color} h-full border-r border-white`}
+//               style={{ width: `${calculateWidth(claim.amount)}%` }}
+//             />
+//           ))}
+
+//           {/* Remaining coverage in green */}
+//           {remainingCoverage > 0 && (
+//             <div
+//               className="bg-green-500 h-full"
+//               style={{ width: `${calculateWidth(remainingCoverage)}%` }}
+//             />
+//           )}
+//         </div>
+
+//         {/* Coverage Information */}
+//         <div className="flex justify-between text-sm font-bold">
+//           <p>Coverage remaining: ${remainingCoverage.toLocaleString()}</p>
+//           <p>Coverage Used: ${usedCoverage.toLocaleString()}</p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ClaimSubmitPage;
+
+
+// import React, { useState } from 'react';
+
+// const insurers = [
+//   { id: 'I123', coverage: 2000000 }, // 2 million total coverage
+// ];
+
+// const initialClaims = [
+//   { id: 'C1', amount: 5000, color: 'bg-blue-500' }, // First claim of 5000
+//   { id: 'C2', amount: 1000000, color: 'bg-red-500' }, // Second claim of 1 million
+// ];
+
+// const ClaimSubmitPage: React.FC = () => {
+//   const [claims, setClaims] = useState(initialClaims);
+//   const [newClaim, setNewClaim] = useState<number>(0);
+//   const totalCoverage = insurers[0].coverage;
+//   const usedCoverage = claims.reduce((acc, claim) => acc + claim.amount, 0);
+//   const remainingCoverage = totalCoverage - usedCoverage;
+
+//   // Handle new claim submission
+//   const handleNewClaimSubmit = () => {
+//     if (newClaim > 0 && newClaim <= remainingCoverage) {
+//       const newClaimEntry = {
+//         id: `C${claims.length + 1}`,
+//         amount: newClaim,
+//         color: `bg-green-${claims.length * 100 + 200}`, // Assign new claim color dynamically
+//       };
+//       setClaims([...claims, newClaimEntry]);
+//       setNewClaim(0);
+//     } else {
+//       alert(`Invalid claim amount. Remaining coverage is $${remainingCoverage.toLocaleString()}`);
+//     }
+//   };
+
+//   // Calculate width of claims relative to total coverage
+//   const calculateWidth = (amount: number) => {
+//     return (amount / totalCoverage) * 100;
+//   };
+
+//   return (
+//     <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-gray-100">
+//       {/* Policy and Insurer List */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md mb-6 text-center">
+//         <p className="text-sm font-bold mb-2">Policy Id: I12345</p>
+//         <p className="text-sm">
+//           Insurers: {insurers.map((insurer) => (
+//             <span key={insurer.id}>
+//               <a href="#" className="text-blue-500">{insurer.id}</a>
+//             </span>
+//           ))}
+//         </p>
+//       </div>
+
+//       {/* Submit New Claim */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md mb-6 flex justify-between items-center">
+//         <p className="text-sm font-bold">Submit New Claim</p>
+//         <input
+//           type="number"
+//           value={newClaim}
+//           onChange={(e) => setNewClaim(parseInt(e.target.value))}
+//           className="border p-2 rounded-md text-sm w-20 text-center mr-4"
+//           placeholder="$ Amount"
+//         />
+//         <button
+//           onClick={handleNewClaimSubmit}
+//           className="bg-blue-500 text-white py-2 px-4 rounded-md text-sm"
+//         >
+//           Submit
+//         </button>
+//       </div>
+
+//       {/* Insurance Claims Indicator */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md">
+//         <div className="flex justify-between text-sm mb-2">
+//           <div className="font-bold">Insurers</div>
+//           <div className="font-bold">Claims</div>
+//         </div>
+
+//         {/* Claims Indicator */}
+//         <div className="relative flex items-center h-10 bg-gray-300 rounded-md overflow-hidden mb-2">
+//           {/* Claims on the scale */}
+//           {claims.map((claim) => (
+//             <div
+//               key={claim.id}
+//               className={`${claim.color} h-full border-r border-white`}
+//               style={{ width: `${calculateWidth(claim.amount)}%` }}
+//             />
+//           ))}
+
+//           {/* Remaining coverage */}
+//           {remainingCoverage > 0 && (
+//             <div
+//               className="bg-green-500 h-full"
+//               style={{ width: `${calculateWidth(remainingCoverage)}%` }}
+//             />
+//           )}
+//         </div>
+
+//         {/* Coverage Information */}
+//         <div className="flex justify-between text-sm font-bold">
+//           <p>Coverage remaining: ${remainingCoverage.toLocaleString()}</p>
+//           <p>Coverage Used: ${usedCoverage.toLocaleString()}</p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ClaimSubmitPage;
+
+// import React, { useState } from 'react';
+
+// const insurers = [
+//   { id: 'I123', coverage: 2000000 }, // 2 million total coverage
+// ];
+
+// const initialClaims = [
+//   { id: 'C1', amount: 5000, color: 'bg-blue-500' }, // First claim of 5000
+//   { id: 'C2', amount: 1000000, color: 'bg-red-500' }, // Second claim of 1 million
+// ];
+
+// const ClaimSubmitPage: React.FC = () => {
+//   const [claims, setClaims] = useState(initialClaims);
+//   const [newClaim, setNewClaim] = useState<number>(0);
+//   const totalCoverage = insurers[0].coverage;
+//   const usedCoverage = claims.reduce((acc, claim) => acc + claim.amount, 0);
+//   const remainingCoverage = totalCoverage - usedCoverage;
+
+//   // Handle new claim submission
+//   const handleNewClaimSubmit = () => {
+//     if (newClaim > 0 && newClaim <= remainingCoverage) {
+//       const newClaimEntry = {
+//         id: `C${claims.length + 1}`,
+//         amount: newClaim,
+//         color: 'bg-green-500', // New claims are indicated in green
+//       };
+//       setClaims([...claims, newClaimEntry]);
+//       setNewClaim(0);
+//     } else {
+//       alert(`Invalid claim amount. Remaining coverage is $${remainingCoverage.toLocaleString()}`);
+//     }
+//   };
+
+//   // Calculate width of claims relative to total coverage
+//   const calculateWidth = (amount: number) => {
+//     return (amount / totalCoverage) * 100;
+//   };
+
+//   return (
+//     <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-gray-100">
+//       {/* Policy and Insurer List */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md mb-6 text-center">
+//         <p className="text-sm font-bold mb-2">Policy Id: I12345</p>
+//         <p className="text-sm">
+//           Insurers: {insurers.map((insurer) => (
+//             <span key={insurer.id}>
+//               <a href="#" className="text-blue-500">{insurer.id}</a>
+//             </span>
+//           ))}
+//         </p>
+//       </div>
+
+//       {/* Submit New Claim */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md mb-6 flex justify-between items-center">
+//         <p className="text-sm font-bold">Submit New Claim</p>
+//         <input
+//           type="number"
+//           value={newClaim}
+//           onChange={(e) => setNewClaim(parseInt(e.target.value))}
+//           className="border p-2 rounded-md text-sm w-20 text-center mr-4"
+//           placeholder="$ Amount"
+//         />
+//         <button
+//           onClick={handleNewClaimSubmit}
+//           className="bg-blue-500 text-white py-2 px-4 rounded-md text-sm"
+//         >
+//           Submit
+//         </button>
+//       </div>
+
+//       {/* Insurance Claims Indicator */}
+//       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md">
+//         <div className="flex justify-between text-sm mb-2">
+//           <div className="font-bold">Insurers</div>
+//           <div className="font-bold">Claims</div>
+//         </div>
+
+//         {/* Claims Indicator */}
+//         <div className="relative flex items-center h-10 bg-gray-300 rounded-md overflow-hidden mb-2">
+//           {/* Claims on the scale */}
+//           {claims.map((claim) => (
+//             <div
+//               key={claim.id}
+//               className={`${claim.color} h-full border-r border-white`}
+//               style={{ width: `${calculateWidth(claim.amount)}%`, minWidth: '10px' }}
+//             />
+//           ))}
+
+//           {/* Remaining coverage */}
+//           {remainingCoverage > 0 && (
+//             <div
+//               className="bg-green-500 h-full"
+//               style={{ width: `${calculateWidth(remainingCoverage)}%` }}
+//             />
+//           )}
+//         </div>
+
+//         {/* Coverage Information */}
+//         <div className="flex justify-between text-sm font-bold">
+//           <p>Coverage remaining: ${remainingCoverage.toLocaleString()}</p>
+//           <p>Coverage Used: ${usedCoverage.toLocaleString()}</p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ClaimSubmitPage;
 
 // import React, { useState } from 'react';
 
