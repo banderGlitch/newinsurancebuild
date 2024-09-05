@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { FaWallet, FaUser, FaShieldAlt, FaSignOutAlt } from 'react-icons/fa'; 
+import { FaWallet, FaUser, FaShieldAlt, FaSignOutAlt } from 'react-icons/fa';
 
 const TabNavigation: React.FC = () => {
   const location = useLocation();

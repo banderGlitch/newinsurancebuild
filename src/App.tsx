@@ -11,6 +11,7 @@ import Logout from './components/Logout';
 import WalletConnectPage from './OutletApp/WalletConnectAuth';
 import NewPolicy from './components/NewPolicy';
 import { Outlet } from 'react-router-dom';
+import NewQuotes from './MainApp/NewPolicyComp/NewQuotesComp';
 
 
 function App() {
@@ -79,12 +80,13 @@ function App() {
         {/* Nested Routes under /user */}
         <Route path="/user" element={<UserLayout />}>
           <Route index element={<User />} />
-          <Route path="newpolicy" element={<NewPolicy />} />
+          <Route path="newpolicy" element={<NewPolicyLayout />}>
+            <Route index element={<NewPolicy />} />
+            <Route path="newquotes" element={<NewQuotes />} />
+          </Route>
         </Route>
-        {/* <Route path="/user" element={<User />} /> */}
         <Route path="/insurer" element={<Insurer />} />
         <Route path="/logout" element={<Logout />} />
-        {/* <Route path='/newpolicy' element={<NewPolicy />} /> */}
         <Route path="/" element={<Wallet />} />
       </Routes>
       <TabNavigation />
@@ -135,6 +137,16 @@ const UserLayout: React.FC = () => {
     </div>
   );
 };
+
+const NewPolicyLayout: React.FC = () => {
+  return (
+    <div>
+      <Outlet /> 
+    </div>
+  );
+};
+
+
 
 export default App;
 
