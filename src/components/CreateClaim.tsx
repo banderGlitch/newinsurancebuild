@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import InsuranceIcon from './InsuranceIcon';
 
 // Insurers data
 const insurers = [
@@ -46,14 +47,16 @@ const ClaimSubmitPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-gray-100">
+    <div className="min-h-screen flex flex-col justify-center items-center p-4">
+        <InsuranceIcon/>
       {/* Policy and Insurer List */}
       <div className="w-full max-w-md bg-white p-4 rounded-lg shadow-md mb-6 text-center">
         <p className="text-sm font-bold mb-2">Policy Id: I12345</p>
         <p className="text-sm">
-          Insurers: {insurers.map((insurer) => (
+        Insurers: {insurers.map((insurer, index) => (
             <span key={insurer.id}>
               <a href="#" className="text-blue-500">{insurer.id}</a>
+              {index < insurers.length - 1 ? ' > ' : ''}
             </span>
           ))}
         </p>
@@ -84,6 +87,59 @@ const ClaimSubmitPage: React.FC = () => {
           <div className="font-bold">Claims</div>
         </div>
 
+         {/* Overlapping Insurers' Coverage Bar */}
+         {/* <div className="relative h-2 bg-gray-300 rounded-t-md mb-2">
+          {insurers.map((insurer) => (
+            <div
+              key={insurer.id}
+              className="absolute top-0 h-full bg-blue-300 opacity-70"
+              style={{
+                width: `${calculateWidth(insurer.coverage)}%`,
+                left: `${(insurers.findIndex(i => i.id === insurer.id) * 100) / insurers.length}%`
+              }}
+            />
+          ))}
+        </div> */}
+        <div className="relative h-6 bg-gray-200 rounded-t-md mb-2">
+          {insurers.map((insurer) => (
+            <div
+              key={insurer.id}
+              className="absolute top-0 h-full bg-blue-300 opacity-70 flex items-center justify-center text-xs"
+              style={{
+                width: `${calculateWidth(insurer.coverage)}%`,
+                left: `${(insurers.findIndex(i => i.id === insurer.id) * 100) / insurers.length}%`,
+              }}
+            >
+              <span>{insurer.id} (${insurer.coverage.toLocaleString()})</span>
+            </div>
+          ))}
+            {/* Overlapping Insurers' Coverage Bar */}
+        <div className="relative h-6 bg-gray-200 rounded-t-md mb-2">
+          {insurers.map((insurer) => (
+            <div
+              key={insurer.id}
+              className="absolute top-0 h-full bg-blue-300 opacity-70 flex items-center justify-center text-xs"
+              style={{
+                width: `${calculateWidth(insurer.coverage)}%`,
+                left: `${(insurers.findIndex(i => i.id === insurer.id) * 100) / insurers.length}%`,
+              }}
+            >
+              <span>{insurer.id} (${insurer.coverage.toLocaleString()})</span>
+            </div>
+          ))}
+
+          {/* Divider lines between insurers */}
+          {insurers.map((insurer, index) => (
+            <div
+              key={insurer.id + '-line'}
+              className="absolute top-0 h-full w-0.5 bg-blue-500"
+              style={{
+                left: `${(index * 100) / insurers.length}%`,
+              }}
+            />
+          ))}
+        </div>
+        </div>
         {/* Claims Indicator */}
         <div className="relative flex items-center h-10 bg-gray-300 rounded-md overflow-hidden mb-2">
           {/* Render all claims first */}
