@@ -120,22 +120,6 @@ const InsurerTable: React.FC<InsurerTableProps> = ({ coverageLimit }) => {
           </div>
         </div>
       )}
-      {/* {selectedRows.length > 0 && (
-        <div className="mb-4 mt-4 pb-4">
-          <h4 className="font-semibold mb-2 text-sm">Selected Order:</h4>
-          <div className="flex space-x-4">
-            {selectedRowData.map((insurer) => (
-              <div
-                key={insurer.insurerId}
-                className="px-2 py-1 bg-gray-200 rounded-md cursor-pointer text-sm"
-                onClick={() => handleDeselect(insurer.insurerId, insurer.coverage, insurer.premium)}
-              >
-                {insurer.insurerId}
-              </div>
-            ))}
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };
