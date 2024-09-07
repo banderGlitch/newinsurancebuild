@@ -13,8 +13,9 @@ const config: HardhatUserConfig = {
       accounts: [`${process.env.HEDERA_ACCOUNT_PRIVATE_KEY}`],
       url: `${process.env.HEDERA_RPC_RELAY_URL}`
     },
-    rootStock: {
-      accounts: [`${process.env.ROOTSTOCK_ACCOUNT_PRIVATE_KEY}`],
+    rootstock: {
+      chainId: 31,
+      accounts: [`${process.env.PRIVATE_KEY}`],
       url: `${process.env.ROOTSTOCK_RPC_URL}`
     }
   },

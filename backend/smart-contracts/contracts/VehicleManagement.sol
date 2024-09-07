@@ -68,7 +68,6 @@ contract VehicleManagement is Ownable {
     }
 
     function getVehicleByAccount() public view returns (Vehicle[] memory){
-        console.log("msg.sender: ", msg.sender);
         return userVehicleMap[msg.sender];
     }
 

@@ -1,0 +1,11 @@
+[?25l[2K[1G[36m?[39m [1mConfirm deploy to network rootstock (31)?[22m [90m›[39m [90m(y/N)[39m[2K[1G[2K[1G[32m✔[39m [1mConfirm deploy to network rootstock (31)?[22m [90m…[39m yes
+[?25hHardhat Ignition starting for [ PolicyModule ]...[2K[1GHardhat Ignition 🚀
+
+Resuming existing deployment from ./ignition/deployments/chain-31
+
+Deploying [ PolicyModule ]
+
+Batch #1
+  Executing PolicyModule#PolicyManagement...
+
+

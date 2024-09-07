@@ -12,7 +12,7 @@
     },
     {
         "vehicleId": 2,
-        "owner": "0xDa4A5DCFCfE0d2547673Ce3259B24658688a8D74",
+        "owner": "0x536A331a2b56c17890239F59808470b812C61168",
         "model": "Defender",
         "purchaseDate": 1725706143,
         "vin": "1HGCM82633A123333",
@@ -20,5 +20,16 @@
         "plateNumber": "KA01MN0200",
         "createdAt": 1725706143,
         "updatedAt": 1725706143
-        }
+    },
+    {
+        "vehicleId": 3,
+        "owner": "0xa7C82d4F255dF660988D7d36099CA29636F48f7D",
+        "model": "Maynach",
+        "purchaseDate": 1725706143,
+        "vin": "1HGCM82633A123323",
+        "color": "Black",
+        "plateNumber": "KA01MN0210",
+        "createdAt": 1725706143,
+        "updatedAt": 1725706143
+    }
 ]

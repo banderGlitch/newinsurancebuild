@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import hre from "hardhat";
-import { AbiCoder, encodeBytes32String, decodeBytes32String, ContractTransactionResponse, ContractRunner } from "ethers";
+import { AbiCoder, encodeBytes32String, decodeBytes32String, ContractTransactionResponse } from "ethers";
 import { VehicleManagement } from "../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
