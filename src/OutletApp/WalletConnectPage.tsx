@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import InsuranceIcon from '../components/InsuranceIcon';
 import WalletComponent from './WalletConnectAuth'; // Import the WalletComponent for wallet connection
