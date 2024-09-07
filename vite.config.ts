@@ -37,6 +37,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      external: ['@simplewebauthn/browser'],
       plugins: [rollupNodePolyFill()],
     },
   },
