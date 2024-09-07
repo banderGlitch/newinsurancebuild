@@ -10,7 +10,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <MetaMaskProvider
       sdkOptions={{
-        debug: true,  // Enable debugging to track initialization issues
         dappMetadata: {
           name: "Car Insurance DApp",
           url: window.location.href,
