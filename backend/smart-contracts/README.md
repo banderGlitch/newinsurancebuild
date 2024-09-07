@@ -14,5 +14,7 @@ npx hardhat ignition deploy ./ignition/modules/PolicyManagement.ts
 
 npx hardhat ignition deploy ./ignition/modules/VehicleManagement.ts --network amoy
 npx hardhat ignition deploy ./ignition/modules/PolicyManagement.ts --network amoy
+
+npx hardhat run ./PolicyManagementService.ts
 ```
 

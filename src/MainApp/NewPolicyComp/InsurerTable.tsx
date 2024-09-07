@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // Sample data for the table
-const insurerData = [
+const insurerData = [ // allQuotations here 
   { insurerId: 'I123', chainId: '1233', premium: 3000, coverage: 100000 },
   { insurerId: 'I456', chainId: '4566', premium: 2000, coverage: 100000 },
   { insurerId: 'I789', chainId: '7899', premium: 10000, coverage: 300000 },

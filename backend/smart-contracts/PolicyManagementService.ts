@@ -2,18 +2,27 @@ import { ethers } from 'ethers';
 import { PolicyManagement__factory, VehicleManagement__factory } from './typechain-types';
 
 // ABI of the PolicyManagement contract
-const Vehicle_ABI: ethers.Interface | ethers.InterfaceAbi = VehicleManagement__factory.abi;
 const Policy_ABI = PolicyManagement__factory.abi;
 
-interface NetworkConfig {
+export interface NetworkConfig {
   chainId: number;
   name: string;
   rpcUrl: string;
   contractAddress: string;
   privateKey: string;
 }
+export interface Quotation {
+   quotationId: number;
+   chain: number;
+   premium: number;
+   insurer: string;
+   coverage: number;
+   coverageUsed: number;
+   createdAt: number;
+   updatedAt: number;
+}
 
-class PolicyManagementService {
+export class PolicyManagementService {
   private contracts: Map<number, ethers.Contract>;
   private signers: Map<number, ethers.Signer>;
   private networks: NetworkConfig[];
@@ -44,13 +53,20 @@ class PolicyManagementService {
     const tx = await contract.addQuotation(premium, coverage, chain);
     const receipt = await tx.wait();
     const event = receipt.events?.find((e: { event: string; }) => e.event === 'QuotationAdded');
-    return event?.args?.quotationId.toNumber();
+    return receipt;
   }
 
   async updateQuotation(chainId: number, quotationId: number, premium: number, coverage: number): Promise<void> {
     const contract = this.getContract(chainId);
     const tx = await contract.updateQuotation(quotationId, premium, coverage);
     await tx.wait();
+  }
+
+  async getQuotations(chainId: number): Promise<Quotation[]> {
+    const contract = this.getContract(chainId);
+    const tx = await contract.getQuotations(); 
+    await tx.wait(); // []
+    return [];
   }
 
   async createPolicy(chainId: number, vehicleId: number, quotationIds: number[]): Promise<number> {
@@ -114,48 +130,51 @@ class PolicyManagementService {
   }
 }
 
+export const networks: NetworkConfig[] = [
+  {
+    chainId: 296,
+    name: 'Hedera Testnet',
+    rpcUrl: `${process.env.HEDERA_RPC_RELAY_URL}`,
+    contractAddress: `${process.env.HEDER_POLICY_CONTRACT_ADDRESS}`, // Contract address on Hedera Testnet
+    privateKey: `${process.env.HEDERA_ACCOUNT_PRIVATE_KEY}`
+  },
+  {
+    chainId: 80002,
+    name: 'Polygon Amoy',
+    rpcUrl: `${process.env.AMOY_RPC}`,
+    contractAddress: `${process.env.POLICY_CONTRACT_ADDRESS}`, // Contract address on Polygon Amoy
+    privateKey: `${process.env.PRIVATE_KEY}`
+  },
+  // Add more networks as needed
+];
 // Example usage
 async function main() {
-  const networks: NetworkConfig[] = [
-    {
-      chainId: 296,
-      name: 'Hedera Testnet',
-      rpcUrl: `${process.env.HEDERA_RPC_RELAY_URL}`,
-      contractAddress: `${process.env.HEDER_POLICY_CONTRACT_ADDRESS}`, // Contract address on Hedera Testnet
-      privateKey: `${process.env.HEDERA_ACCOUNT_PRIVATE_KEY}`
-    },
-    {
-      chainId: 80002,
-      name: 'Polygon Amoy',
-      rpcUrl: `${process.env.AMOY_RPC}`,
-      contractAddress: `${process.env.POLICY_CONTRACT_ADDRESS}`, // Contract address on Polygon Amoy
-      privateKey: `${process.env.PRIVATE_KEY}`
-    },
-    // Add more networks as needed
-  ];
+  
 
   const policyManagement = new PolicyManagementService(networks);
 
   try {
     // Add a quotation on Hedera Testnet
-    const quotationIdEth = await policyManagement.addQuotation(296, 100, 1000, 1);
-    console.log('Added quotation on Hedera Testnet:', quotationIdEth);
-
+    // const quotationIdEth = await policyManagement.addQuotation(296, 100, 1000, 296);
+    // console.log('Added quotation on Hedera Testnet:', quotationIdEth);
+    const quotationIdEth = await policyManagement.addQuotation(80002, 200, 2000, 80002);
+    console.log('Added quotation on Polygon Amoy:', quotationIdEth);
+    
     // Create a policy on Polygon Amoy
-    const policyIdPolygon = await policyManagement.createPolicy(80002, 123, [1]); // Assuming quotation ID 1 exists on Polygon
-    console.log('Created policy on Polygon:', policyIdPolygon);
+    // const policyIdPolygon = await policyManagement.createPolicy(80002, 123, [1]); // Assuming quotation ID 1 exists on Polygon
+    // console.log('Created policy on Polygon:', policyIdPolygon);
 
-    // Request a claim on Polygon
-    const claimIdPolygon = await policyManagement.requestClaim(80002, policyIdPolygon, 500, 'Car accident');
-    console.log('Requested claim on Polygon:', claimIdPolygon);
+    // // Request a claim on Polygon
+    // const claimIdPolygon = await policyManagement.requestClaim(80002, policyIdPolygon, 500, 'Car accident');
+    // console.log('Requested claim on Polygon:', claimIdPolygon);
 
-    // Approve the claim on Polygon
-    await policyManagement.approveClaim(80002, claimIdPolygon);
-    console.log('Approved claim on Polygon:', claimIdPolygon);
+    // // Approve the claim on Polygon
+    // await policyManagement.approveClaim(80002, claimIdPolygon);
+    // console.log('Approved claim on Polygon:', claimIdPolygon);
 
-    // Get policy details from Polygon
-    const policyPolygon = await policyManagement.getPolicy(80002, policyIdPolygon);
-    console.log('Policy details on Polygon:', policyPolygon);
+    // // Get policy details from Polygon
+    // const policyPolygon = await policyManagement.getPolicy(80002, policyIdPolygon);
+    // console.log('Policy details on Polygon:', policyPolygon);
 
   } catch (error) {
     console.error('Error:', error);
