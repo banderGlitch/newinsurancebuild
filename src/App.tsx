@@ -8,12 +8,14 @@ import Wallet from './components/Wallet';
 import User from './components/User';
 import Insurer from './components/Insurer';
 import Logout from './components/Logout';
-import WalletConnectPage from './OutletApp/WalletConnectAuth';
+// import WalletConnectPage from './OutletApp/WalletConnectAuth';
 import NewPolicy from './components/NewPolicy';
 import { Outlet } from 'react-router-dom';
 import NewQuotes from './MainApp/NewPolicyComp/NewQuotesComp';
 import ClaimSubmitPage from './components/CreateClaim';
 import ConfirmAndPay from './MainApp/NewPolicyComp/ConfirmAndPay';
+import  WalletConnectPage from './OutletApp/WalletConnectPage'
+
 
 
 function App() {

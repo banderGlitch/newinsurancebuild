@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lit-protocol/constants": "^6.4.4",
-    "@lit-protocol/contracts-sdk": "^6.4.4",
-    "@lit-protocol/lit-node-client": "^6.4.4",
+    "@lit-protocol/auth-helpers": "^6.4.10",
+    "@lit-protocol/constants": "^6.4.10",
+    "@lit-protocol/contracts-sdk": "^6.4.10",
+    "@lit-protocol/lit-node-client": "^6.4.10",
     "@metamask/sdk-react": "^0.28.0",
     "bs58": "^6.0.0",
+    "buffer": "^6.0.3",
     "ethers": "^5.7.2",
     "ipfs-only-hash": "^4.0.0",
     "react": "^18.3.1",
