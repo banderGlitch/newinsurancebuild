@@ -1,0 +1,24 @@
+[
+    {
+    "vehicleId": 1,
+    "owner": "0x17d7565b1E8eD70060fcb01CD11e323357f5a71B",
+    "model": "Wrath",
+    "purchaseDate": 1725706143,
+    "vin": "1HGCM82633A123456",
+    "color": "Black",
+    "plateNumber": "KA01MN0100",
+    "createdAt": 1725706143,
+    "updatedAt": 1725706143
+    },
+    {
+        "vehicleId": 2,
+        "owner": "0xDa4A5DCFCfE0d2547673Ce3259B24658688a8D74",
+        "model": "Defender",
+        "purchaseDate": 1725706143,
+        "vin": "1HGCM82633A123333",
+        "color": "Black",
+        "plateNumber": "KA01MN0200",
+        "createdAt": 1725706143,
+        "updatedAt": 1725706143
+        }
+]
