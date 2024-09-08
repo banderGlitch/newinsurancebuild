@@ -12,11 +12,15 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 
 deployment commands:
+
 npx hardhat ignition deploy ./ignition/modules/VehicleManagement.ts
 npx hardhat ignition deploy ./ignition/modules/PolicyManagement.ts
 
 npx hardhat ignition deploy ./ignition/modules/VehicleManagement.ts --network amoy
 npx hardhat ignition deploy ./ignition/modules/PolicyManagement.ts --network amoy
+
+npx hardhat ignition deploy ./ignition/modules/VehicleManagement.ts --network hedera
+npx hardhat ignition deploy ./ignition/modules/PolicyManagement.ts --network hedera
 
 Script running command:
 npx hardhat run ./PolicyManagementService.ts
