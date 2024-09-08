@@ -97,6 +97,37 @@ export declare namespace PolicyManagement {
     createdAt: bigint;
     updatedAt: bigint;
   };
+
+  export type QuotationStruct = {
+    quotationId: BigNumberish;
+    chain: BigNumberish;
+    premium: BigNumberish;
+    insurer: AddressLike;
+    coverage: BigNumberish;
+    coverageUsed: BigNumberish;
+    createdAt: BigNumberish;
+    updatedAt: BigNumberish;
+  };
+
+  export type QuotationStructOutput = [
+    quotationId: bigint,
+    chain: bigint,
+    premium: bigint,
+    insurer: string,
+    coverage: bigint,
+    coverageUsed: bigint,
+    createdAt: bigint,
+    updatedAt: bigint
+  ] & {
+    quotationId: bigint;
+    chain: bigint;
+    premium: bigint;
+    insurer: string;
+    coverage: bigint;
+    coverageUsed: bigint;
+    createdAt: bigint;
+    updatedAt: bigint;
+  };
 }
 
 export interface PolicyManagementInterface extends Interface {
@@ -111,10 +142,12 @@ export interface PolicyManagementInterface extends Interface {
       | "getInsurerPolicies"
       | "getPolicy"
       | "getPolicyClaims"
+      | "getQuotations"
       | "getUserPolicies"
       | "insurerPolicies"
       | "policies"
       | "policyClaims"
+      | "quotationList"
       | "quotations"
       | "requestClaim"
       | "updateQuotation"
@@ -167,6 +200,10 @@ export interface PolicyManagementInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getQuotations",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getUserPolicies",
     values: [AddressLike]
   ): string;
@@ -180,6 +217,10 @@ export interface PolicyManagementInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "policyClaims",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "quotationList",
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -224,6 +265,10 @@ export interface PolicyManagementInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getQuotations",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getUserPolicies",
     data: BytesLike
   ): Result;
@@ -234,6 +279,10 @@ export interface PolicyManagementInterface extends Interface {
   decodeFunctionResult(functionFragment: "policies", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "policyClaims",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "quotationList",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "quotations", data: BytesLike): Result;
@@ -277,20 +326,11 @@ export namespace ClaimRequestedEvent {
 }
 
 export namespace ClaimStatusUpdatedEvent {
-  export type InputTuple = [
-    claimId: BigNumberish,
-    status: BigNumberish,
-    updatedAt: BigNumberish
-  ];
-  export type OutputTuple = [
-    claimId: bigint,
-    status: bigint,
-    updatedAt: bigint
-  ];
+  export type InputTuple = [claimId: BigNumberish, status: BigNumberish];
+  export type OutputTuple = [claimId: bigint, status: bigint];
   export interface OutputObject {
     claimId: bigint;
     status: bigint;
-    updatedAt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -305,8 +345,7 @@ export namespace PolicyCreatedEvent {
     premium: BigNumberish,
     coverage: BigNumberish,
     user: AddressLike,
-    insurers: AddressLike[],
-    createdAt: BigNumberish
+    insurers: AddressLike[]
   ];
   export type OutputTuple = [
     policyId: bigint,
@@ -314,8 +353,7 @@ export namespace PolicyCreatedEvent {
     premium: bigint,
     coverage: bigint,
     user: string,
-    insurers: string[],
-    createdAt: bigint
+    insurers: string[]
   ];
   export interface OutputObject {
     policyId: bigint;
@@ -324,7 +362,6 @@ export namespace PolicyCreatedEvent {
     coverage: bigint;
     user: string;
     insurers: string[];
-    createdAt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -336,20 +373,17 @@ export namespace QuotationAddedEvent {
   export type InputTuple = [
     quotationId: BigNumberish,
     premium: BigNumberish,
-    coverage: BigNumberish,
-    createdAt: BigNumberish
+    coverage: BigNumberish
   ];
   export type OutputTuple = [
     quotationId: bigint,
     premium: bigint,
-    coverage: bigint,
-    createdAt: bigint
+    coverage: bigint
   ];
   export interface OutputObject {
     quotationId: bigint;
     premium: bigint;
     coverage: bigint;
-    createdAt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -361,20 +395,17 @@ export namespace QuotationUpdatedEvent {
   export type InputTuple = [
     quotationId: BigNumberish,
     premium: BigNumberish,
-    coverage: BigNumberish,
-    updatedAt: BigNumberish
+    coverage: BigNumberish
   ];
   export type OutputTuple = [
     quotationId: bigint,
     premium: bigint,
-    coverage: bigint,
-    updatedAt: bigint
+    coverage: bigint
   ];
   export interface OutputObject {
     quotationId: bigint;
     premium: bigint;
     coverage: bigint;
-    updatedAt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -485,6 +516,12 @@ export interface PolicyManagement extends BaseContract {
     "view"
   >;
 
+  getQuotations: TypedContractMethod<
+    [],
+    [PolicyManagement.QuotationStructOutput[]],
+    "view"
+  >;
+
   getUserPolicies: TypedContractMethod<[user: AddressLike], [bigint[]], "view">;
 
   insurerPolicies: TypedContractMethod<
@@ -524,6 +561,23 @@ export interface PolicyManagement extends BaseContract {
   policyClaims: TypedContractMethod<
     [arg0: BigNumberish, arg1: BigNumberish],
     [bigint],
+    "view"
+  >;
+
+  quotationList: TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [
+      [bigint, bigint, bigint, string, bigint, bigint, bigint, bigint] & {
+        quotationId: bigint;
+        chain: bigint;
+        premium: bigint;
+        insurer: string;
+        coverage: bigint;
+        coverageUsed: bigint;
+        createdAt: bigint;
+        updatedAt: bigint;
+      }
+    ],
     "view"
   >;
 
@@ -624,6 +678,13 @@ export interface PolicyManagement extends BaseContract {
     nameOrSignature: "getPolicyClaims"
   ): TypedContractMethod<[policyId: BigNumberish], [bigint[]], "view">;
   getFunction(
+    nameOrSignature: "getQuotations"
+  ): TypedContractMethod<
+    [],
+    [PolicyManagement.QuotationStructOutput[]],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "getUserPolicies"
   ): TypedContractMethod<[user: AddressLike], [bigint[]], "view">;
   getFunction(
@@ -667,6 +728,24 @@ export interface PolicyManagement extends BaseContract {
   ): TypedContractMethod<
     [arg0: BigNumberish, arg1: BigNumberish],
     [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "quotationList"
+  ): TypedContractMethod<
+    [arg0: BigNumberish, arg1: BigNumberish],
+    [
+      [bigint, bigint, bigint, string, bigint, bigint, bigint, bigint] & {
+        quotationId: bigint;
+        chain: bigint;
+        premium: bigint;
+        insurer: string;
+        coverage: bigint;
+        coverageUsed: bigint;
+        createdAt: bigint;
+        updatedAt: bigint;
+      }
+    ],
     "view"
   >;
   getFunction(
@@ -757,7 +836,7 @@ export interface PolicyManagement extends BaseContract {
       ClaimRequestedEvent.OutputObject
     >;
 
-    "ClaimStatusUpdated(uint256,uint8,uint256)": TypedContractEvent<
+    "ClaimStatusUpdated(uint256,uint8)": TypedContractEvent<
       ClaimStatusUpdatedEvent.InputTuple,
       ClaimStatusUpdatedEvent.OutputTuple,
       ClaimStatusUpdatedEvent.OutputObject
@@ -768,7 +847,7 @@ export interface PolicyManagement extends BaseContract {
       ClaimStatusUpdatedEvent.OutputObject
     >;
 
-    "PolicyCreated(uint256,uint256,uint256,uint256,address,address[],uint256)": TypedContractEvent<
+    "PolicyCreated(uint256,uint256,uint256,uint256,address,address[])": TypedContractEvent<
       PolicyCreatedEvent.InputTuple,
       PolicyCreatedEvent.OutputTuple,
       PolicyCreatedEvent.OutputObject
@@ -779,7 +858,7 @@ export interface PolicyManagement extends BaseContract {
       PolicyCreatedEvent.OutputObject
     >;
 
-    "QuotationAdded(uint256,uint256,uint256,uint256)": TypedContractEvent<
+    "QuotationAdded(uint256,uint256,uint256)": TypedContractEvent<
       QuotationAddedEvent.InputTuple,
       QuotationAddedEvent.OutputTuple,
       QuotationAddedEvent.OutputObject
@@ -790,7 +869,7 @@ export interface PolicyManagement extends BaseContract {
       QuotationAddedEvent.OutputObject
     >;
 
-    "QuotationUpdated(uint256,uint256,uint256,uint256)": TypedContractEvent<
+    "QuotationUpdated(uint256,uint256,uint256)": TypedContractEvent<
       QuotationUpdatedEvent.InputTuple,
       QuotationUpdatedEvent.OutputTuple,
       QuotationUpdatedEvent.OutputObject

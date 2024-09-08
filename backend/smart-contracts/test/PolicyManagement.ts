@@ -6,14 +6,14 @@ import { PolicyManagement } from "../typechain-types";
 describe.only("PolicyManagement", function () {
   let policyManagement: PolicyManagement & { deploymentTransaction(): ContractTransactionResponse; };
   let owner: Signer;
-  let addr1: Signer;
-  let addr2: Signer;
+  let insurer1: Signer;
+  let insurer2: Signer;
   let addrs: Signer[];
 
   beforeEach(async function () {
     // Get the ContractFactory and Signers here.
     const PolicyManagement = await ethers.getContractFactory("PolicyManagement");
-    [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
+    [owner, insurer1, insurer2, ...addrs] = await ethers.getSigners();
 
     // Deploy a new PolicyManagement contract before each test
     policyManagement = await PolicyManagement.deploy();
@@ -23,64 +23,77 @@ describe.only("PolicyManagement", function () {
   });
 
   describe("Quotation", function () {
-    it("Should add a new quotation", async function () {
+    it.only("Should add a new quotation", async function () {
       const premium = 100;
       const coverage = 1000;
-      const chain = 1;
-
-      // await expect(policyManagement.connect(addr1).addQuotation(premium, coverage, chain))
-      //   .to.emit(policyManagement, "QuotationAdded")
-      //   .withArgs(1, premium, coverage, await ethers.provider.getBlock('latest').then(b => b!.timestamp));
-      
+      const chain = 296;
+      await expect(policyManagement.connect(insurer1).addQuotation(premium, coverage, chain))
+        .to.emit(policyManagement, "QuotationAdded")
+        .withArgs(1, premium, coverage);
       const quotation = await policyManagement.quotations(1);
+      console.log("quotation: ", quotation);
       expect(quotation.premium).to.equal(premium);
       expect(quotation.coverage).to.equal(coverage);
-      expect(quotation.insurer).to.equal(await addr1.getAddress());
+      expect(quotation.insurer).to.equal(await insurer1.getAddress());
     });
 
-    it("Should update an existing quotation", async function () {
+    it.only("Should update an existing quotation", async function () {
       const premium = 100;
       const coverage = 1000;
-      const chain = 1;
-      await policyManagement.connect(addr1).addQuotation(premium, coverage, chain);
-
+      const chain = 296;
+      const res = await policyManagement.connect(insurer1).addQuotation(premium, coverage, chain);
+      console.log("res: ", res.hash);
       const newPremium = 200;
       const newCoverage = 2000;
-      // await expect(policyManagement.connect(addr1).updateQuotation(1, newPremium, newCoverage))
-      //   .to.emit(policyManagement, "QuotationUpdated")
-      //   .withArgs(1, newPremium, newCoverage, await ethers.provider.getBlock('latest').then(b => b!.timestamp));
+      const _quotation = await policyManagement.quotations(1);
+      console.log("_quotation: ", _quotation);
+      console.log("_quotation[0]: ", _quotation[0]);
+      await expect(policyManagement.connect(insurer1).updateQuotation(_quotation[0], newPremium, newCoverage))
+        .to.emit(policyManagement, "QuotationUpdated")
+        .withArgs(_quotation[0], newPremium, newCoverage);
 
       const quotation = await policyManagement.quotations(1);
+      console.log("quotation[0]: ", quotation);
       expect(quotation.premium).to.equal(newPremium);
       expect(quotation.coverage).to.equal(newCoverage);
+    });
+
+    it.only("Should get All quotations", async function () {
+      const chain = 296;
+      const res = await policyManagement.connect(insurer1).addQuotation(100, 1000, chain);
+      console.log("res: ", res.hash);
+      const res1 = await policyManagement.connect(insurer2).addQuotation(200, 2000, chain);
+      console.log("res1: ", res1.hash);
+      const quotation = await policyManagement.getQuotations();
+      console.log("quotation: ", quotation);
     });
   });
 
   describe("Policy", function () {
     it("Should create a new policy", async function () {
       // First, add a quotation
-      await policyManagement.connect(addr1).addQuotation(100, 1000, 1);
+      await policyManagement.connect(insurer1).addQuotation(100, 1000, 1);
 
       const vehicleId = 123;
       const quotationIds = [1];
 
-      // await expect(policyManagement.connect(addr2).createPolicy(vehicleId, quotationIds))
+      // await expect(policyManagement.connect(insurer2).createPolicy(vehicleId, quotationIds))
       //   .to.emit(policyManagement, "PolicyCreated")
-      //   .withArgs(1, vehicleId, 100, 1000, await addr2.getAddress(), [await addr1.getAddress()], await ethers.provider.getBlock('latest').then(b => b!.timestamp));
+      //   .withArgs(1, vehicleId, 100, 1000, await insurer2.getAddress(), [await insurer1.getAddress()], await ethers.provider.getBlock('latest').then(b => b!.timestamp));
 
       const policy = await policyManagement.policies(1);
       expect(policy.vehicleId).to.equal(vehicleId);
       expect(policy.premium).to.equal(100);
       expect(policy.coverage).to.equal(1000);
-      expect(policy.user).to.equal(await addr2.getAddress());
+      expect(policy.user).to.equal(await insurer2.getAddress());
     });
   });
 
   describe("Claim", function () {
     beforeEach(async function () {
       // Add a quotation and create a policy before each claim test
-      await policyManagement.connect(addr1).addQuotation(100, 1000, 1);
-      await policyManagement.connect(addr2).createPolicy(123, [1]);
+      await policyManagement.connect(insurer1).addQuotation(100, 1000, 1);
+      await policyManagement.connect(insurer2).createPolicy(123, [1]);
     });
 
     it("Should request a claim", async function () {
@@ -88,7 +101,7 @@ describe.only("PolicyManagement", function () {
       const claimAmount = 500;
       const reason = ethers.encodeBytes32String("Car accident");
 
-      // await expect(policyManagement.connect(addr2).requestClaim(policyId, claimAmount, reason))
+      // await expect(policyManagement.connect(insurer2).requestClaim(policyId, claimAmount, reason))
       //   .to.emit(policyManagement, "ClaimRequested")
       //   .withArgs(policyId, 1, claimAmount, 0); // 0 represents ClaimStatus.INITIATED
 
@@ -100,9 +113,9 @@ describe.only("PolicyManagement", function () {
     });
 
     it("Should approve a claim", async function () {
-      await policyManagement.connect(addr2).requestClaim(1, 500, ethers.encodeBytes32String("Car accident"));
+      await policyManagement.connect(insurer2).requestClaim(1, 500, ethers.encodeBytes32String("Car accident"));
 
-      // await expect(policyManagement.connect(addr1).approveClaim(1))
+      // await expect(policyManagement.connect(insurer1).approveClaim(1))
       //   .to.emit(policyManagement, "ClaimStatusUpdated")
       //   .withArgs(1, 1, await ethers.provider.getBlock('latest').then(b => b!.timestamp)); // 1 represents ClaimStatus.APPROVED
 
@@ -115,9 +128,9 @@ describe.only("PolicyManagement", function () {
     });
 
     it("Should deny a claim", async function () {
-      await policyManagement.connect(addr2).requestClaim(1, 500, ethers.encodeBytes32String("Car accident"));
+      await policyManagement.connect(insurer2).requestClaim(1, 500, ethers.encodeBytes32String("Car accident"));
 
-      // await expect(policyManagement.connect(addr1).denyClaim(1))
+      // await expect(policyManagement.connect(insurer1).denyClaim(1))
       //   .to.emit(policyManagement, "ClaimStatusUpdated")
       //   .withArgs(1, 2, await ethers.provider.getBlock('latest').then(b => b!.timestamp)); // 2 represents ClaimStatus.DENIED
 
@@ -129,11 +142,11 @@ describe.only("PolicyManagement", function () {
   describe("Getter functions", function () {
     beforeEach(async function () {
       // Add quotations and create policies before each getter test
-      await policyManagement.connect(addr1).addQuotation(100, 1000, 1);
-      await policyManagement.connect(addr1).addQuotation(200, 2000, 2);
-      await policyManagement.connect(addr2).createPolicy(123, [1]);
-      await policyManagement.connect(addr2).createPolicy(456, [2]);
-      await policyManagement.connect(addr2).requestClaim(1, 500, ethers.encodeBytes32String("Car accident"));
+      await policyManagement.connect(insurer1).addQuotation(100, 1000, 1);
+      await policyManagement.connect(insurer1).addQuotation(200, 2000, 2);
+      await policyManagement.connect(insurer2).createPolicy(123, [1]);
+      await policyManagement.connect(insurer2).createPolicy(456, [2]);
+      await policyManagement.connect(insurer2).requestClaim(1, 500, ethers.encodeBytes32String("Car accident"));
     });
 
     it("Should get policy details", async function () {
@@ -144,14 +157,14 @@ describe.only("PolicyManagement", function () {
     });
 
     it("Should get user policies", async function () {
-      const userPolicies = await policyManagement.getUserPolicies(await addr2.getAddress());
+      const userPolicies = await policyManagement.getUserPolicies(await insurer2.getAddress());
       expect(userPolicies.length).to.equal(2);
       expect(userPolicies[0]).to.equal(1);
       expect(userPolicies[1]).to.equal(2);
     });
 
     it("Should get insurer policies", async function () {
-      const insurerPolicies = await policyManagement.getInsurerPolicies(await addr1.getAddress());
+      const insurerPolicies = await policyManagement.getInsurerPolicies(await insurer1.getAddress());
       expect(insurerPolicies.length).to.equal(2);
       expect(insurerPolicies[0]).to.equal(1);
       expect(insurerPolicies[1]).to.equal(2);

@@ -64,18 +64,13 @@ export interface VehicleManagementInterface extends Interface {
     nameOrSignature:
       | "getVehicleByAccount"
       | "getVehicleByVehicleId"
-      | "owner"
       | "registerVehicle"
-      | "renounceOwnership"
-      | "transferOwnership"
       | "userVehicleMap"
       | "vehicle"
       | "vehicles"
   ): FunctionFragment;
 
-  getEvent(
-    nameOrSignatureOrTopic: "OwnershipTransferred" | "VehicleRegistered"
-  ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VehicleRegistered"): EventFragment;
 
   encodeFunctionData(
     functionFragment: "getVehicleByAccount",
@@ -85,18 +80,9 @@ export interface VehicleManagementInterface extends Interface {
     functionFragment: "getVehicleByVehicleId",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "registerVehicle",
     values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "userVehicleMap",
@@ -119,17 +105,8 @@ export interface VehicleManagementInterface extends Interface {
     functionFragment: "getVehicleByVehicleId",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "registerVehicle",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -138,19 +115,6 @@ export interface VehicleManagementInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "vehicle", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "vehicles", data: BytesLike): Result;
-}
-
-export namespace OwnershipTransferredEvent {
-  export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
-  export type OutputTuple = [previousOwner: string, newOwner: string];
-  export interface OutputObject {
-    previousOwner: string;
-    newOwner: string;
-  }
-  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
-  export type Filter = TypedDeferredTopicFilter<Event>;
-  export type Log = TypedEventLog<Event>;
-  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace VehicleRegisteredEvent {
@@ -226,17 +190,7 @@ export interface VehicleManagement extends BaseContract {
     "view"
   >;
 
-  owner: TypedContractMethod<[], [string], "view">;
-
   registerVehicle: TypedContractMethod<[data: BytesLike], [void], "nonpayable">;
-
-  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
-
-  transferOwnership: TypedContractMethod<
-    [newOwner: AddressLike],
-    [void],
-    "nonpayable"
-  >;
 
   userVehicleMap: TypedContractMethod<
     [arg0: AddressLike, arg1: BigNumberish],
@@ -337,17 +291,8 @@ export interface VehicleManagement extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "owner"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "registerVehicle"
   ): TypedContractMethod<[data: BytesLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "renounceOwnership"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "transferOwnership"
-  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "userVehicleMap"
   ): TypedContractMethod<
@@ -437,13 +382,6 @@ export interface VehicleManagement extends BaseContract {
   >;
 
   getEvent(
-    key: "OwnershipTransferred"
-  ): TypedContractEvent<
-    OwnershipTransferredEvent.InputTuple,
-    OwnershipTransferredEvent.OutputTuple,
-    OwnershipTransferredEvent.OutputObject
-  >;
-  getEvent(
     key: "VehicleRegistered"
   ): TypedContractEvent<
     VehicleRegisteredEvent.InputTuple,
@@ -452,17 +390,6 @@ export interface VehicleManagement extends BaseContract {
   >;
 
   filters: {
-    "OwnershipTransferred(address,address)": TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
-    >;
-    OwnershipTransferred: TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
-    >;
-
     "VehicleRegistered(uint256,address,bytes32)": TypedContractEvent<
       VehicleRegisteredEvent.InputTuple,
       VehicleRegisteredEvent.OutputTuple,

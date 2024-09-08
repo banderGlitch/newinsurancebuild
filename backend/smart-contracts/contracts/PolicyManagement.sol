@@ -11,7 +11,7 @@ import "hardhat/console.sol";
 contract PolicyManagement {
 
     uint256 private constant PERCENTAGE_BASE = 100;
-
+    uint256 private constant KEY=1;
     // Enum representing policy status
     enum Status {
         Active,
@@ -69,16 +69,17 @@ contract PolicyManagement {
     mapping(address => uint256[]) public insurerPolicies;
     mapping(uint256 => Claim) public claims;
     mapping(uint256 => uint256[]) public policyClaims;
+    mapping(uint256 => Quotation[]) public quotationList;
 
     uint256 private nextQuotationId = 1;
     uint256 private nextPolicyId = 1;
     uint256 private nextClaimId = 1;
 
-    event QuotationAdded(uint256 indexed quotationId, uint256 premium, uint256 coverage, uint256 createdAt);
-    event QuotationUpdated(uint256 indexed quotationId, uint256 premium, uint256 coverage, uint256 updatedAt);
-    event PolicyCreated(uint256 indexed policyId, uint256 indexed vehicleId, uint256 premium, uint256 coverage, address indexed user, address[] insurers, uint256 createdAt);
+    event QuotationAdded(uint256 indexed quotationId, uint256 premium, uint256 coverage);
+    event QuotationUpdated(uint256 indexed quotationId, uint256 premium, uint256 coverage);
+    event PolicyCreated(uint256 indexed policyId, uint256 indexed vehicleId, uint256 premium, uint256 coverage, address indexed user, address[] insurers);
     event ClaimRequested(uint256 indexed policyId, uint256 indexed claimId, uint256 claimAmount, ClaimStatus status);
-    event ClaimStatusUpdated(uint256 indexed claimId, ClaimStatus status, uint256 updatedAt);
+    event ClaimStatusUpdated(uint256 indexed claimId, ClaimStatus status);
 
     modifier onlyPolicyOwner(uint256 policyId) {
         require(policies[policyId].user == msg.sender, "Not policy owner");
@@ -109,22 +110,30 @@ contract PolicyManagement {
         newQuotation.insurer = msg.sender;
         newQuotation.createdAt = block.timestamp;
         newQuotation.updatedAt = block.timestamp;
-
-        emit QuotationAdded(quotationId, premium, coverage, block.timestamp);
+        Quotation[] storage _quotationList = quotationList[KEY];
+        _quotationList.push(newQuotation);
+        emit QuotationAdded(quotationId, premium, coverage);
         return quotationId;
     }
 
     function updateQuotation(uint256 quotationId, uint256 premium, uint256 coverage) public {
         Quotation storage quotation = quotations[quotationId];
+        require(quotation.quotationId == quotationId, "Quotation not found");
         require(quotation.insurer == msg.sender, "Not quotation owner");
         require(quotation.coverageUsed == 0, "Quotation already in use");
 
         quotation.premium = premium;
         quotation.coverage = coverage;
         quotation.updatedAt = block.timestamp;
-
-        emit QuotationUpdated(quotationId, premium, coverage, block.timestamp);
+        Quotation[] storage _quotationList = quotationList[KEY];
+        for (uint i = 0; i < _quotationList.length; i++) {
+            if (_quotationList[i].quotationId == quotationId) {
+                _quotationList[i] = quotation;
+            }  
+        }
+        emit QuotationUpdated(quotationId, premium, coverage);
     }
+
 
     function createPolicy(uint256 vehicleId, uint256[] memory quotationIds) public returns (uint256) {
         require(quotationIds.length > 0, "At least one quotation required");
@@ -159,7 +168,7 @@ contract PolicyManagement {
 
         userPolicies[msg.sender].push(policyId);
 
-        emit PolicyCreated(policyId, vehicleId, totalPremium, totalCoverage, msg.sender, newPolicy.insurers, block.timestamp);
+        emit PolicyCreated(policyId, vehicleId, totalPremium, totalCoverage, msg.sender, newPolicy.insurers);
         return policyId;
     }
 
@@ -218,7 +227,7 @@ contract PolicyManagement {
             policy.status = Status.InActive;
         }
 
-        emit ClaimStatusUpdated(claimId, ClaimStatus.APPROVED, block.timestamp);
+        emit ClaimStatusUpdated(claimId, ClaimStatus.APPROVED);
     }
 
     function denyClaim(uint256 claimId) public onlyInsurer(claims[claimId].policyId) {
@@ -228,10 +237,12 @@ contract PolicyManagement {
         claim.status = ClaimStatus.DENIED;
         claim.updatedAt = block.timestamp;
 
-        emit ClaimStatusUpdated(claimId, ClaimStatus.DENIED, block.timestamp);
+        emit ClaimStatusUpdated(claimId, ClaimStatus.DENIED);
     }
 
-    // Getter functions
+    function getQuotations() public view returns(Quotation[] memory){
+        return quotationList[KEY];
+    } 
 
     function getPolicy(uint256 policyId) public view returns (Policy memory) {
         return policies[policyId];
@@ -252,4 +263,5 @@ contract PolicyManagement {
     function getPolicyClaims(uint256 policyId) public view returns (uint256[] memory) {
         return policyClaims[policyId];
     }
+
 }

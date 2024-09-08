@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity ^0.8.24;
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
 /** 
  * @title VehicleManagement
  * @dev Implements vehicle registration process for users
  */
-contract VehicleManagement is Ownable {
+contract VehicleManagement {
 
     // state variables
     struct Vehicle {
@@ -35,7 +34,7 @@ contract VehicleManagement is Ownable {
     /** 
      * @dev Intialize VehicleManagement
      */
-    constructor() Ownable(msg.sender){}
+    constructor(){}
 
     // Register Vehicle
     function registerVehicle(bytes memory data) public {
