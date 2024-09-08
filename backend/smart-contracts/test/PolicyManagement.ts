@@ -73,11 +73,11 @@ describe.only("PolicyManagement", function () {
     it("Should create a new policy", async function () {
       // First, add a quotation
       await policyManagement.connect(insurer1).addQuotation(100, 1000, 1);
-
+      const quotes = await policyManagement.connect(insurer1).getQuotations();
       const vehicleId = 123;
       const quotationIds = [1];
 
-      await expect(policyManagement.connect(insurer2).createPolicy(vehicleId, quotationIds))
+      await expect(policyManagement.connect(insurer2).createPolicy(vehicleId, quotes))
         .to.emit(policyManagement, "PolicyCreated")
         .withArgs(1, vehicleId, 100, 1000, await insurer2.getAddress(), [await insurer1.getAddress()], await ethers.provider.getBlock('latest').then(b => b!.timestamp));
 
@@ -93,7 +93,8 @@ describe.only("PolicyManagement", function () {
     beforeEach(async function () {
       // Add a quotation and create a policy before each claim test
       await policyManagement.connect(insurer1).addQuotation(100, 1000, 1);
-      await policyManagement.connect(insurer2).createPolicy(123, [1]);
+      const quotes = await policyManagement.connect(insurer1).getQuotations();
+      await policyManagement.connect(insurer2).createPolicy(123, quotes);
     });
 
     it("Should request a claim", async function () {
@@ -144,8 +145,9 @@ describe.only("PolicyManagement", function () {
       // Add quotations and create policies before each getter test
       await policyManagement.connect(insurer1).addQuotation(100, 1000, 1);
       await policyManagement.connect(insurer1).addQuotation(200, 2000, 2);
-      await policyManagement.connect(insurer2).createPolicy(123, [1]);
-      await policyManagement.connect(insurer2).createPolicy(456, [2]);
+      const quotes = await policyManagement.connect(insurer1).getQuotations();
+      await policyManagement.connect(insurer2).createPolicy(123, quotes);
+      await policyManagement.connect(insurer2).createPolicy(456, quotes);
       await policyManagement.connect(insurer2).requestClaim(1, 500, ethers.encodeBytes32String("Car accident"));
     });
 
