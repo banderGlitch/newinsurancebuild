@@ -17,7 +17,7 @@ const PolicyComponent: React.FC = () => {
       <div className="flex items-center space-x-2">
         <p className="text-sm font-semibold">Policy Id:</p>
         {/* <p onClick={(createClaim(80002, 1, 500, 'Car accident')) => navigate('createClaim')} className="text-sm">claimDetails.claimId</p> */}
-        <p onClick={() => navigate('createClaim')} className="text-sm">claimDetails.claimId</p>
+        <p onClick={() => navigate('createClaim')} className="text-sm"></p>
       </div>
       <div className="flex items-center space-x-2">
         <p className="text-sm font-semibold">Status:</p>

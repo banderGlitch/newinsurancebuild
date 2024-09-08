@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {PolicyManagementService,NetworkConfig} from "../../../backend/smart-contracts/PolicyManagementService.ts";
 interface CoverageInputProps {
@@ -24,15 +24,22 @@ const networks: NetworkConfig[] = [
   // Add more networks as needed
 ];
 
-const getQuotation = async () => {
-  const policyManagement = new PolicyManagementService(networks);
-  const allQuotations: any = [];
-  const quotations = await policyManagement.getQuotations(296);
-  allQuotations.push(quotations);
-  const amoy_quotations = await policyManagement.getQuotations(80002);
-  allQuotations.push(amoy_quotations);
-  return allQuotations;
-}
+
+useEffect(()=>{
+  const getQuotation = async () => {
+    console.log("getQuotation",networks)
+    const policyManagement = new PolicyManagementService(networks);
+    const allQuotations: any = [];
+    const quotations = await policyManagement.getQuotations(296);
+    allQuotations.push(quotations);
+    const amoy_quotations = await policyManagement.getQuotations(80002);
+    allQuotations.push(amoy_quotations);
+    return allQuotations;
+  }
+
+  getQuotation();
+},[])
+
 const CoverageInput: React.FC<CoverageInputProps> = ({ coverageLimit, setCoverage }) => {
   const navigation = useNavigate()
   return (
@@ -44,7 +51,7 @@ const CoverageInput: React.FC<CoverageInputProps> = ({ coverageLimit, setCoverag
         onChange={(e) => setCoverage(e.target.value)}
         className="w-1/3 px-2 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-       <button onClick={(getQuotation) => navigation("/user/newpolicy/newquotes")} className="ml-4 bg-blue-500 text-white px-2 py-0.5 rounded-md text-sm font-semibold hover:bg-blue-600 transition duration-200">
+       <button onClick={() => navigation("/user/newpolicy/newquotes")} className="ml-4 bg-blue-500 text-white px-2 py-0.5 rounded-md text-sm font-semibold hover:bg-blue-600 transition duration-200">
         Request Quotations
       </button>
     </div>
