@@ -66,8 +66,7 @@ export class PolicyManagementService {
   async getQuotations(chainId: number): Promise<Quotation[]> {
     const contract = this.getContract(chainId);
     const tx = await contract.getQuotations(); 
-    await tx.wait(); // []
-    return [];
+    return tx;
   }
 
   async createPolicy(chainId: number, vehicleId: number, quotationIds: number[]): Promise<number> {
@@ -149,37 +148,39 @@ const networks: NetworkConfig[] = [
   // Add more networks as needed
 ];
 // Example usage
-// export async function main() {
+export async function main() {
   
 
-//   const policyManagement = new PolicyManagementService(networks);
+  const policyManagement = new PolicyManagementService(networks);
 
-//   try {
-//     // Add a quotation on Hedera Testnet
-//     // const quotationIdEth = await policyManagement.addQuotation(296, 100, 1000, 296);
-//     // console.log('Added quotation on Hedera Testnet:', quotationIdEth);
-//     const quotationIdEth = await policyManagement.addQuotation(80002, 200, 2000, 80002);
-//     console.log('Added quotation on Polygon Amoy:', quotationIdEth);
+  try {
+    // Add a quotation on Hedera Testnet
+    // const quotationIdEth = await policyManagement.addQuotation(296, 100, 1000, 296);
+    // console.log('Added quotation on Hedera Testnet:', quotationIdEth);
+    // const quotationIdEth = await policyManagement.addQuotation(80002, 200, 2000, 80002);
+    // console.log('Added quotation on Polygon Amoy:', quotationIdEth);
+    //  const quotations = await policyManagement.getQuotations(296);
+      // console.log('Added quotation on Hedera Testnet:', quotations);
     
-//     // Create a policy on Polygon Amoy
-//     // const policyIdPolygon = await policyManagement.createPolicy(80002, 123, [1]); // Assuming quotation ID 1 exists on Polygon
-//     // console.log('Created policy on Polygon:', policyIdPolygon);
+    // Create a policy on Polygon Amoy
+    // const policyIdPolygon = await policyManagement.createPolicy(80002, 123, [1]); // Assuming quotation ID 1 exists on Polygon
+    // console.log('Created policy on Polygon:', policyIdPolygon);
 
-//     // // Request a claim on Polygon
-//     // const claimIdPolygon = await policyManagement.requestClaim(80002, policyIdPolygon, 500, 'Car accident');
-//     // console.log('Requested claim on Polygon:', claimIdPolygon);
+    // // Request a claim on Polygon
+    // const claimIdPolygon = await policyManagement.requestClaim(80002, policyIdPolygon, 500, 'Car accident');
+    // console.log('Requested claim on Polygon:', claimIdPolygon);
 
-//     // // Approve the claim on Polygon
-//     // await policyManagement.approveClaim(80002, claimIdPolygon);
-//     // console.log('Approved claim on Polygon:', claimIdPolygon);
+    // // Approve the claim on Polygon
+    // await policyManagement.approveClaim(80002, claimIdPolygon);
+    // console.log('Approved claim on Polygon:', claimIdPolygon);
 
-//     // // Get policy details from Polygon
-//     // const policyPolygon = await policyManagement.getPolicy(80002, policyIdPolygon);
-//     // console.log('Policy details on Polygon:', policyPolygon);
+    // // Get policy details from Polygon
+    // const policyPolygon = await policyManagement.getPolicy(80002, policyIdPolygon);
+    // console.log('Policy details on Polygon:', policyPolygon);
 
-//   } catch (error) {
-//     console.error('Error:', error);
-//   }
-// }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
 
-// main();
+main();
