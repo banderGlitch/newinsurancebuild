@@ -8,14 +8,15 @@ const vehicleContractAddress = `${process.env.HEDER_VEHICLE_CONTRACT_ADDRESS}`;
 const abiCoder = AbiCoder.defaultAbiCoder();
 
 const registerVehicles = async() => {
-  const [acc1] = await hre.ethers.getSigners();
-  console.log({acc1});
-  const provider = new hre.ethers.JsonRpcProvider(`${process.env.HEDERA_RPC_RELAY_URL}`);
-  const deployer = new hre.ethers.Wallet(`${process.env.HEDERA_ACCOUNT_PRIVATE_KEY}`, provider);
+   const provider = new hre.ethers.JsonRpcProvider(`${process.env.HEDERA_RPC_RELAY_URL}`);
+  const user3 = new hre.ethers.Wallet(`${process.env.HEDERA_ACCOUNT_PRIVATE_KEY}`, provider);
+  const user1 = new hre.ethers.Wallet(`${process.env.USER1_PRIVATE_KEY}`, provider);
   const user2 = new hre.ethers.Wallet(`${process.env.USER2_PRIVATE_KEY}`, provider);
-  console.log({deployer});
+  console.log({user1});
+  const acc = [user1, user2,user3];
+  console.log({acc});
   // Create a contract instance
-  const vehicleContract = VehicleManagement__factory.connect(vehicleContractAddress,deployer);
+  const vehicleContract = VehicleManagement__factory.connect(vehicleContractAddress);
   for (let index = 0; index < vehicles.length; index++) {
     const vehicle = vehicles[index];
     const data = abiCoder.encode([
@@ -30,7 +31,7 @@ const registerVehicles = async() => {
       vehicle.createdAt,
       vehicle.updatedAt]);
       console.log({data});
-    const tx = await vehicleContract.registerVehicle(data);
+    const tx = await vehicleContract.connect(user2).registerVehicle(data);
     console.log("Vehicle Registration Hash: ", tx.hash);
   }
   const vehicleContract1 = VehicleManagement__factory.connect(vehicleContractAddress, user2);

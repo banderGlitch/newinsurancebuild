@@ -14,10 +14,6 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
-      name: "Ownable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Ownable__factory>;
-    getContractFactory(
       name: "PolicyManagement",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PolicyManagement__factory>;
@@ -27,11 +23,6 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.VehicleManagement__factory>;
 
     getContractAt(
-      name: "Ownable",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Ownable>;
-    getContractAt(
       name: "PolicyManagement",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -43,10 +34,6 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.VehicleManagement>;
 
     deployContract(
-      name: "Ownable",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Ownable>;
-    deployContract(
       name: "PolicyManagement",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.PolicyManagement>;
@@ -55,11 +42,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.VehicleManagement>;
 
-    deployContract(
-      name: "Ownable",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Ownable>;
     deployContract(
       name: "PolicyManagement",
       args: any[],

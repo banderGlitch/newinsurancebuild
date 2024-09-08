@@ -29,12 +29,6 @@ describe("VehicleManagement", async function () {
     }
   });
 
-  describe("Deployment", function () {
-    it("Should set the right owner", async function () {
-      expect(await vehicleManagement.owner()).to.equal(owner.address);
-    });
-  });
-
   describe("Register Vehicle", function () {
     describe("Validations", function () {
       it("Should register a vehicle", async function () {

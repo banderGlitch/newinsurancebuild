@@ -77,9 +77,9 @@ describe.only("PolicyManagement", function () {
       const vehicleId = 123;
       const quotationIds = [1];
 
-      // await expect(policyManagement.connect(insurer2).createPolicy(vehicleId, quotationIds))
-      //   .to.emit(policyManagement, "PolicyCreated")
-      //   .withArgs(1, vehicleId, 100, 1000, await insurer2.getAddress(), [await insurer1.getAddress()], await ethers.provider.getBlock('latest').then(b => b!.timestamp));
+      await expect(policyManagement.connect(insurer2).createPolicy(vehicleId, quotationIds))
+        .to.emit(policyManagement, "PolicyCreated")
+        .withArgs(1, vehicleId, 100, 1000, await insurer2.getAddress(), [await insurer1.getAddress()], await ethers.provider.getBlock('latest').then(b => b!.timestamp));
 
       const policy = await policyManagement.policies(1);
       expect(policy.vehicleId).to.equal(vehicleId);

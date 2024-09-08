@@ -1,95 +1,96 @@
 import ethers from 'ethers';
-import axios from 'axios';
-import { VehicleManagement__factory } from './typechain-types';
+// import axios from 'axios';
+import {abi} from "./VehicleManagement.json";
+import { NetworkConfig } from './PolicyManagementService';
 
 // ABI of the VehicleManagement contract (you'll need to replace this with the actual ABI)
-const Vehicle_ABI: ethers.Interface | ethers.InterfaceAbi = VehicleManagement__factory.abi;
-
-// Contract addresses on different networks
-const CONTRACT_ADDRESSES = {
-  hedera_testnet: `${process.env.HEDER_POLICY_CONTRACT_ADDRESS}`, 
-  polygon_amoy: `${process.env.POLICY_CONTRACT_ADDRESS}`,  
-  // Add more networks as needed
-};
-
-// RPC URLs for different networks
-const RPC_URLS = {
-  hedera_testnet: `${process.env.HEDERA_RPC_RELAY_URL}`,
-  polygon_amoy:`${process.env.AMOY_RPC}`,
-  // Add more networks as needed
-};
-
-// Native token symbols for different networks
-const NATIVE_TOKENS = {
-  hedera_testnet: 'ETH',
-  polygon_amoy: 'MATIC',
-  // Add more networks as needed
-};
+const Vehicle_ABI: ethers.Interface | ethers.InterfaceAbi = abi;
 
 class VehicleManagementBackend {
-  constructor(network = 'hedera_testnet') {
-    this.setNetwork(network);
+  private contracts: Map<number, ethers.Contract>;
+  private signers: Map<number, ethers.Signer>;
+  private networks: NetworkConfig[];
+  // private wallet: ethers.ethers.Wallet;
+
+  constructor(networks: NetworkConfig[]) {
+    this.networks = networks;
+    this.contracts = new Map();
+    this.signers = new Map();
+
+    networks.forEach(network => {
+      console.log("network.rpcUrl: ",network.rpcUrl);
+      const provider = new ethers.JsonRpcProvider(network.rpcUrl);
+      const signer = new ethers.Wallet(network.privateKey, provider);
+      this.signers.set(network.chainId, signer);
+      this.contracts.set(network.chainId, new ethers.Contract(network.contractAddress, Vehicle_ABI, signer));
+    });
   }
 
-  setNetwork(network:any) {
-    if (!CONTRACT_ADDRESSES[network]) {
-      throw new Error(`Unsupported network: ${network}`);
+  private getContract(chainId: number): ethers.Contract {
+    const contract = this.contracts.get(chainId);
+    if (!contract) {
+      throw new Error(`Contract not found for chain ID ${chainId}`);
     }
-    this.network = network;
-    this.provider = new ethers.providers.JsonRpcProvider(RPC_URLS[network]);
-    this.contract = new ethers.Contract(CONTRACT_ADDRESSES[network], Vehicle_ABI, this.provider);
+    return contract;
   }
-
-  async connectWallet(privateKey) {
-    this.wallet = new ethers.Wallet(privateKey, this.provider);
-    this.connectedContract = this.contract.connect(this.wallet);
+  
+  getNetworks(): NetworkConfig[] {
+    return this.networks;
   }
+  
+  // async connectWallet(privateKey: string | ethers.ethers.SigningKey) {
+  //   this.wallet = new ethers.Wallet(privateKey, this.provider);
+  //   this.connectedContract = this.contract.connect(this.wallet);
+  // }
 
-  async registerVehicle(vehicleData) {
-    if (!this.connectedContract) {
-      throw new Error('Wallet not connected');
-    }
+  async registerVehicle(chainId: number, vehicleData: { vehicleId: any; owner: any; model: any; purchaseDate: any; vin: any; color: any; plateNumber: any; }) {
+    const contract = this.getContract(chainId);
+    // if (!this.connectedContract) {
+    //   throw new Error('Wallet not connected');
+    // }
 
-    const encodedData = ethers.utils.defaultAbiCoder.encode(
+    const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
       ['uint256', 'address', 'bytes32', 'uint256', 'bytes32', 'bytes32', 'bytes32', 'uint256', 'uint256'],
       [
         vehicleData.vehicleId,
         vehicleData.owner,
-        ethers.utils.formatBytes32String(vehicleData.model),
+        ethers.encodeBytes32String(vehicleData.model),
         vehicleData.purchaseDate,
-        ethers.utils.formatBytes32String(vehicleData.vin),
-        ethers.utils.formatBytes32String(vehicleData.color),
-        ethers.utils.formatBytes32String(vehicleData.plateNumber),
+        ethers.encodeBytes32String(vehicleData.vin),
+        ethers.encodeBytes32String(vehicleData.color),
+        ethers.encodeBytes32String(vehicleData.plateNumber),
         Math.floor(Date.now() / 1000),  // createdAt
         Math.floor(Date.now() / 1000)   // updatedAt
       ]
     );
 
-    const tx = await this.connectedContract.registerVehicle(encodedData);
+    const tx = await contract.registerVehicle(encodedData);
     return await tx.wait();
   }
 
-  async getVehicleByAccount() {
-    return await this.contract.getVehicleByAccount();
+  async getVehicleByAccount(chainId: number) {
+    const contract = this.getContract(chainId);
+    return await contract.getVehicleByAccount();
   }
 
-  async getVehicleByVehicleId(vehicleId) {
-    return await this.contract.getVehicleByVehicleId(vehicleId);
+  async getVehicleByVehicleId(chainId: number, vehicleId: number) {
+    const contract = this.getContract(chainId);
+    return await contract.getVehicleByVehicleId(vehicleId);
   }
 
-  async convertAmount(amount, fromToken, toToken) {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${fromToken},${toToken}&vs_currencies=usd`);
-    const fromTokenPriceUSD = response.data[fromToken].usd;
-    const toTokenPriceUSD = response.data[toToken].usd;
+  // async convertAmount(amount: number, fromToken: string, toToken: string) {
+  //   const response = await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${fromToken},${toToken}&vs_currencies=usd`);
+  //   const fromTokenPriceUSD = response.data[fromToken].usd;
+  //   const toTokenPriceUSD = response.data[toToken].usd;
     
-    const convertedAmount = (amount * fromTokenPriceUSD) / toTokenPriceUSD;
-    return convertedAmount;
-  }
+  //   const convertedAmount = (amount * fromTokenPriceUSD) / toTokenPriceUSD;
+  //   return convertedAmount;
+  // }
 
-  async convertAmountToNative(amount, fromToken) {
-    const nativeToken = NATIVE_TOKENS[this.network].toLowerCase();
-    return await this.convertAmount(amount, fromToken, nativeToken);
-  }
+  // async convertAmountToNative(amount: any, fromToken: any) {
+  //   const nativeToken = NATIVE_TOKENS[this.network].toLowerCase();
+  //   return await this.convertAmount(amount, fromToken, nativeToken);
+  // }
 }
 
 module.exports = VehicleManagementBackend;
