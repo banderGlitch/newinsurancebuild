@@ -1,5 +1,5 @@
 {
-  "name": "vehicle_indexer",
+  "name": "Vehicle_Indexer",
   "version": "0.1.0",
   "scripts": {
     "clean": "tsc --clean",

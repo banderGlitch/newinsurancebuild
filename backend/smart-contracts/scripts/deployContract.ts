@@ -1,9 +1,9 @@
 import { ethers } from "hardhat";
 
-module.exports = async () => {
+async function main() {
   //Assign the first signer, which comes from the first privateKey from our configuration in hardhat.config.js, to a wallet variable.
   let wallet = (await ethers.getSigners())[0];
-
+  console.log({wallet});
   //Initialize a contract factory object
   //name of contract as first parameter
   //wallet/signer used for signing the contract calls/transactions with this contract
@@ -24,4 +24,9 @@ module.exports = async () => {
   console.log(`PolicyManagement deployed to: ${policycontractAddress}`);
 
   return contractAddress;
-};
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

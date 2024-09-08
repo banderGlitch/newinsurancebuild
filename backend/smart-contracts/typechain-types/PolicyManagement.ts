@@ -24,6 +24,37 @@ import type {
 } from "./common";
 
 export declare namespace PolicyManagement {
+  export type QuotationStruct = {
+    quotationId: BigNumberish;
+    chain: BigNumberish;
+    premium: BigNumberish;
+    insurer: AddressLike;
+    coverage: BigNumberish;
+    coverageUsed: BigNumberish;
+    createdAt: BigNumberish;
+    updatedAt: BigNumberish;
+  };
+
+  export type QuotationStructOutput = [
+    quotationId: bigint,
+    chain: bigint,
+    premium: bigint,
+    insurer: string,
+    coverage: bigint,
+    coverageUsed: bigint,
+    createdAt: bigint,
+    updatedAt: bigint
+  ] & {
+    quotationId: bigint;
+    chain: bigint;
+    premium: bigint;
+    insurer: string;
+    coverage: bigint;
+    coverageUsed: bigint;
+    createdAt: bigint;
+    updatedAt: bigint;
+  };
+
   export type ClaimStruct = {
     policyId: BigNumberish;
     claimAmount: BigNumberish;
@@ -97,37 +128,6 @@ export declare namespace PolicyManagement {
     createdAt: bigint;
     updatedAt: bigint;
   };
-
-  export type QuotationStruct = {
-    quotationId: BigNumberish;
-    chain: BigNumberish;
-    premium: BigNumberish;
-    insurer: AddressLike;
-    coverage: BigNumberish;
-    coverageUsed: BigNumberish;
-    createdAt: BigNumberish;
-    updatedAt: BigNumberish;
-  };
-
-  export type QuotationStructOutput = [
-    quotationId: bigint,
-    chain: bigint,
-    premium: bigint,
-    insurer: string,
-    coverage: bigint,
-    coverageUsed: bigint,
-    createdAt: bigint,
-    updatedAt: bigint
-  ] & {
-    quotationId: bigint;
-    chain: bigint;
-    premium: bigint;
-    insurer: string;
-    coverage: bigint;
-    coverageUsed: bigint;
-    createdAt: bigint;
-    updatedAt: bigint;
-  };
 }
 
 export interface PolicyManagementInterface extends Interface {
@@ -138,6 +138,7 @@ export interface PolicyManagementInterface extends Interface {
       | "claims"
       | "createPolicy"
       | "denyClaim"
+      | "deposit"
       | "getClaim"
       | "getInsurerPolicies"
       | "getPolicy"
@@ -145,6 +146,7 @@ export interface PolicyManagementInterface extends Interface {
       | "getQuotations"
       | "getUserPolicies"
       | "insurerPolicies"
+      | "owner"
       | "policies"
       | "policyClaims"
       | "quotationList"
@@ -152,6 +154,7 @@ export interface PolicyManagementInterface extends Interface {
       | "requestClaim"
       | "updateQuotation"
       | "userPolicies"
+      | "withdraw"
   ): FunctionFragment;
 
   getEvent(
@@ -177,12 +180,13 @@ export interface PolicyManagementInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createPolicy",
-    values: [BigNumberish, BigNumberish[]]
+    values: [BigNumberish, PolicyManagement.QuotationStruct[]]
   ): string;
   encodeFunctionData(
     functionFragment: "denyClaim",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "deposit", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getClaim",
     values: [BigNumberish]
@@ -211,6 +215,7 @@ export interface PolicyManagementInterface extends Interface {
     functionFragment: "insurerPolicies",
     values: [AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "policies",
     values: [BigNumberish]
@@ -239,6 +244,7 @@ export interface PolicyManagementInterface extends Interface {
     functionFragment: "userPolicies",
     values: [AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "addQuotation",
@@ -254,6 +260,7 @@ export interface PolicyManagementInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "denyClaim", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getClaim", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getInsurerPolicies",
@@ -276,6 +283,7 @@ export interface PolicyManagementInterface extends Interface {
     functionFragment: "insurerPolicies",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "policies", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "policyClaims",
@@ -298,6 +306,7 @@ export interface PolicyManagementInterface extends Interface {
     functionFragment: "userPolicies",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 }
 
 export namespace ClaimRequestedEvent {
@@ -485,12 +494,14 @@ export interface PolicyManagement extends BaseContract {
   >;
 
   createPolicy: TypedContractMethod<
-    [vehicleId: BigNumberish, quotationIds: BigNumberish[]],
+    [vehicleId: BigNumberish, _quotations: PolicyManagement.QuotationStruct[]],
     [bigint],
     "nonpayable"
   >;
 
   denyClaim: TypedContractMethod<[claimId: BigNumberish], [void], "nonpayable">;
+
+  deposit: TypedContractMethod<[], [void], "payable">;
 
   getClaim: TypedContractMethod<
     [claimId: BigNumberish],
@@ -529,6 +540,8 @@ export interface PolicyManagement extends BaseContract {
     [bigint],
     "view"
   >;
+
+  owner: TypedContractMethod<[], [string], "view">;
 
   policies: TypedContractMethod<
     [arg0: BigNumberish],
@@ -616,6 +629,8 @@ export interface PolicyManagement extends BaseContract {
     "view"
   >;
 
+  withdraw: TypedContractMethod<[], [void], "nonpayable">;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -650,13 +665,16 @@ export interface PolicyManagement extends BaseContract {
   getFunction(
     nameOrSignature: "createPolicy"
   ): TypedContractMethod<
-    [vehicleId: BigNumberish, quotationIds: BigNumberish[]],
+    [vehicleId: BigNumberish, _quotations: PolicyManagement.QuotationStruct[]],
     [bigint],
     "nonpayable"
   >;
   getFunction(
     nameOrSignature: "denyClaim"
   ): TypedContractMethod<[claimId: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "deposit"
+  ): TypedContractMethod<[], [void], "payable">;
   getFunction(
     nameOrSignature: "getClaim"
   ): TypedContractMethod<
@@ -694,6 +712,9 @@ export interface PolicyManagement extends BaseContract {
     [bigint],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "policies"
   ): TypedContractMethod<
@@ -787,6 +808,9 @@ export interface PolicyManagement extends BaseContract {
     [bigint],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "withdraw"
+  ): TypedContractMethod<[], [void], "nonpayable">;
 
   getEvent(
     key: "ClaimRequested"

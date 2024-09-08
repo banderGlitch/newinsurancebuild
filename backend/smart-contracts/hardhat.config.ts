@@ -17,6 +17,11 @@ const config: HardhatUserConfig = {
       chainId: 31,
       accounts: [`${process.env.PRIVATE_KEY}`],
       url: `${process.env.ROOTSTOCK_RPC_URL}`
+    },
+    barachain_bartio: {
+      chainId: 80084,
+      accounts: [`${process.env.BERACHAIN_PRIVATE_KEY}`],
+      url: `${process.env.BERACHAIN_RPC_URL}`
     }
   },
   solidity: {

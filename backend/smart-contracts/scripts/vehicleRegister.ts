@@ -12,9 +12,7 @@ const registerVehicles = async() => {
   const user3 = new hre.ethers.Wallet(`${process.env.HEDERA_ACCOUNT_PRIVATE_KEY}`, provider);
   const user1 = new hre.ethers.Wallet(`${process.env.USER1_PRIVATE_KEY}`, provider);
   const user2 = new hre.ethers.Wallet(`${process.env.USER2_PRIVATE_KEY}`, provider);
-  console.log({user1});
   const acc = [user1, user2,user3];
-  console.log({acc});
   // Create a contract instance
   const vehicleContract = VehicleManagement__factory.connect(vehicleContractAddress);
   for (let index = 0; index < vehicles.length; index++) {
@@ -30,8 +28,7 @@ const registerVehicles = async() => {
       encodeBytes32String(vehicle.plateNumber),
       vehicle.createdAt,
       vehicle.updatedAt]);
-      console.log({data});
-    const tx = await vehicleContract.connect(user2).registerVehicle(data);
+    const tx = await vehicleContract.connect(acc[index]).registerVehicle(data);
     console.log("Vehicle Registration Hash: ", tx.hash);
   }
   const vehicleContract1 = VehicleManagement__factory.connect(vehicleContractAddress, user2);

@@ -10,6 +10,9 @@ import "hardhat/console.sol";
  */
 contract PolicyManagement {
 
+    // Payable address can send Ether via transfer or send
+    address payable public owner;
+
     uint256 private constant PERCENTAGE_BASE = 100;
     uint256 private constant KEY=1;
     // Enum representing policy status
@@ -98,7 +101,28 @@ contract PolicyManagement {
         _;
     }
 
-    constructor() {}
+   
+    // Payable constructor can receive Ether
+    constructor() payable {
+        owner = payable(msg.sender);
+    }
+
+    // Function to deposit Ether into this contract.
+    // Call this function along with some Ether.
+    // The balance of this contract will be automatically updated.
+    function deposit() public payable {}
+
+    // Function to withdraw all Ether from this contract.
+    function withdraw() public {
+        // get the amount of Ether stored in this contract
+        uint256 amount = address(this).balance;
+
+        // send all Ether to owner
+        (bool success,) = owner.call{value: amount}("");
+        require(success, "Failed to send Ether");
+    }
+
+
 
     function addQuotation(uint256 premium, uint256 coverage, uint256 chain) public returns (uint256) {
         uint256 quotationId = nextQuotationId++;
@@ -135,8 +159,8 @@ contract PolicyManagement {
     }
 
 
-    function createPolicy(uint256 vehicleId, uint256[] memory quotationIds) public returns (uint256) {
-        require(quotationIds.length > 0, "At least one quotation required");
+    function createPolicy(uint256 vehicleId, Quotation[] memory _quotations) public returns (uint256) {
+        require(_quotations.length > 0, "At least one quotation required");
 
         uint256 policyId = nextPolicyId++;
         Policy storage newPolicy = policies[policyId];
@@ -149,15 +173,17 @@ contract PolicyManagement {
         uint256 totalPremium = 0;
         uint256 totalCoverage = 0;
 
-        for (uint i = 0; i < quotationIds.length; i++) {
-            Quotation storage quotation = quotations[quotationIds[i]];
+        for (uint i = 0; i < _quotations.length; i++) {
+            Quotation memory quotation = _quotations[i];
             require(quotation.coverageUsed == 0, "Quotation already in use");
 
             newPolicy.insurers.push(quotation.insurer);
-            newPolicy.quotationIds.push(quotationIds[i]);
+            newPolicy.quotationIds.push(quotation.quotationId);
             totalPremium += quotation.premium;
             totalCoverage += quotation.coverage;
-
+            // pay premium to insurer from this contract
+            (bool success,) = payable(quotation.insurer).call{value: quotation.premium}("");
+            require(success, "Failed to send Ether");
             quotation.coverageUsed = quotation.coverage;
             insurerPolicies[quotation.insurer].push(policyId);
         }

@@ -1,9 +1,3 @@
-type VehicleManagement_OwnershipTransferred {
-  id: ID!
-  previousOwner: String!
-  newOwner: String!
-}
-
 type VehicleManagement_VehicleRegistered {
   id: ID!
   vehicleId: BigInt!

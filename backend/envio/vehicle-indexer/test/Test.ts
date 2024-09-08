@@ -1,36 +1,37 @@
 import assert from "assert";
 import { 
   TestHelpers,
-  VehicleManagement_OwnershipTransferred
+  VehicleManagement_VehicleRegistered
 } from "generated";
 const { MockDb, VehicleManagement } = TestHelpers;
 
-describe("VehicleManagement contract OwnershipTransferred event tests", () => {
+describe("VehicleManagement contract VehicleRegistered event tests", () => {
   // Create mock db
   const mockDb = MockDb.createMockDb();
 
-  // Creating mock for VehicleManagement contract OwnershipTransferred event
-  const event = VehicleManagement.OwnershipTransferred.createMockEvent({/* It mocks event fields with default values. You can overwrite them if you need */});
+  // Creating mock for VehicleManagement contract VehicleRegistered event
+  const event = VehicleManagement.VehicleRegistered.createMockEvent({/* It mocks event fields with default values. You can overwrite them if you need */});
 
-  it("VehicleManagement_OwnershipTransferred is created correctly", async () => {
+  it("VehicleManagement_VehicleRegistered is created correctly", async () => {
     // Processing the event
-    const mockDbUpdated = await VehicleManagement.OwnershipTransferred.processEvent({
+    const mockDbUpdated = await VehicleManagement.VehicleRegistered.processEvent({
       event,
       mockDb,
     });
 
     // Getting the actual entity from the mock database
-    let actualVehicleManagementOwnershipTransferred = mockDbUpdated.entities.VehicleManagement_OwnershipTransferred.get(
+    let actualVehicleManagementVehicleRegistered = mockDbUpdated.entities.VehicleManagement_VehicleRegistered.get(
       `${event.chainId}_${event.block.number}_${event.logIndex}`
     );
 
     // Creating the expected entity
-    const expectedVehicleManagementOwnershipTransferred: VehicleManagement_OwnershipTransferred = {
+    const expectedVehicleManagementVehicleRegistered: VehicleManagement_VehicleRegistered = {
       id: `${event.chainId}_${event.block.number}_${event.logIndex}`,
-      previousOwner: event.params.previousOwner,
-      newOwner: event.params.newOwner,
+      vehicleId: event.params.vehicleId,
+      owner: event.params.owner,
+      model: event.params.model,
     };
     // Asserting that the entity in the mock database is the same as the expected entity
-    assert.deepEqual(actualVehicleManagementOwnershipTransferred, expectedVehicleManagementOwnershipTransferred, "Actual VehicleManagementOwnershipTransferred should be the same as the expectedVehicleManagementOwnershipTransferred");
+    assert.deepEqual(actualVehicleManagementVehicleRegistered, expectedVehicleManagementVehicleRegistered, "Actual VehicleManagementVehicleRegistered should be the same as the expectedVehicleManagementVehicleRegistered");
   });
 });
