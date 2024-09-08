@@ -31,9 +31,10 @@ export class PolicyManagementService {
     this.networks = networks;
     this.contracts = new Map();
     this.signers = new Map();
-
+    console.log("network--------------------------->",networks);
     networks.forEach(network => {
-      const provider = new ethers.JsonRpcProvider(network.rpcUrl);
+      console.log("network.rpcUrl: ",network.rpcUrl);
+      const provider = new ethers.providers.JsonRpcProvider(network.rpcUrl);
       const signer = new ethers.Wallet(network.privateKey, provider);
       this.signers.set(network.chainId, signer);
       this.contracts.set(network.chainId, new ethers.Contract(network.contractAddress, Policy_ABI, signer));
@@ -79,7 +80,7 @@ export class PolicyManagementService {
 
   async requestClaim(chainId: number, policyId: number, claimAmount: number, reason: string): Promise<number> {
     const contract = this.getContract(chainId);
-    const tx = await contract.requestClaim(policyId, claimAmount, ethers.encodeBytes32String(reason));
+    const tx = await contract.requestClaim(policyId, claimAmount, ethers.utils.formatBytes32String(reason));
     const receipt = await tx.wait();
     const event = receipt.events?.find((e: { event: string; }) => e.event === 'ClaimRequested');
     return event?.args?.claimId.toNumber();
@@ -201,4 +202,4 @@ export async function main() {
   }
 }
 
-main();
+// main();

@@ -4,7 +4,7 @@ import {abi} from "./VehicleManagement.json";
 import { NetworkConfig } from './PolicyManagementService';
 
 // ABI of the VehicleManagement contract (you'll need to replace this with the actual ABI)
-const Vehicle_ABI: ethers.Interface | ethers.InterfaceAbi = abi;
+const Vehicle_ABI = abi;
 
 class VehicleManagementBackend {
   private contracts: Map<number, ethers.Contract>;
@@ -19,7 +19,7 @@ class VehicleManagementBackend {
 
     networks.forEach(network => {
       console.log("network.rpcUrl: ",network.rpcUrl);
-      const provider = new ethers.JsonRpcProvider(network.rpcUrl);
+      const provider = new ethers.providers.JsonRpcProvider(network.rpcUrl);
       const signer = new ethers.Wallet(network.privateKey, provider);
       this.signers.set(network.chainId, signer);
       this.contracts.set(network.chainId, new ethers.Contract(network.contractAddress, Vehicle_ABI, signer));
@@ -49,16 +49,16 @@ class VehicleManagementBackend {
     //   throw new Error('Wallet not connected');
     // }
 
-    const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
+    const encodedData = ethers.utils.defaultAbiCoder.encode(
       ['uint256', 'address', 'bytes32', 'uint256', 'bytes32', 'bytes32', 'bytes32', 'uint256', 'uint256'],
       [
         vehicleData.vehicleId,
         vehicleData.owner,
-        ethers.encodeBytes32String(vehicleData.model),
+        ethers.utils.formatBytes32String(vehicleData.model),
         vehicleData.purchaseDate,
-        ethers.encodeBytes32String(vehicleData.vin),
-        ethers.encodeBytes32String(vehicleData.color),
-        ethers.encodeBytes32String(vehicleData.plateNumber),
+        ethers.utils.formatBytes32String(vehicleData.vin),
+       ethers.utils.formatBytes32String(vehicleData.color),
+       ethers.utils.formatBytes32String(vehicleData.plateNumber),
         Math.floor(Date.now() / 1000),  // createdAt
         Math.floor(Date.now() / 1000)   // updatedAt
       ]

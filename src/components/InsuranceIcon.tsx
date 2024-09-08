@@ -6,7 +6,7 @@ const InsuranceIcon: React.FC = () => {
   return (
     <div className="absolute top-0 left-0 flex items-center space-x-40">
     <img src={InsuranceLogo} className='h-20' alt="Insurance Logo" />
-    <img src={BeraChainLogo} className='h-16' alt="Chain Logo" />
+    {/* <img src={BeraChainLogo} className='h-16' alt="Chain Logo" /> */}
   </div>
     
     // <div className="absolute top-0 left-0">

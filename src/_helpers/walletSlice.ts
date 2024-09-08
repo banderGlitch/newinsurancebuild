@@ -5,6 +5,7 @@ export interface WalletState { // Ensure the WalletState type is exported
   walletConnected: boolean;
   walletAddress: string | null;
   walletBalance: string | null;
+  walletTokenName : string | null
   litNodeClient: any | null;
 }
 
@@ -12,6 +13,7 @@ const initialState: WalletState = {
   walletConnected: false,
   walletAddress: null,
   walletBalance: null,
+  walletTokenName: null,
   litNodeClient: null,
 };
 
@@ -31,6 +33,9 @@ const walletSlice = createSlice({
     setLitNodeClient: (state, action: PayloadAction<any>) => {
       state.litNodeClient = action.payload;
     },
+    setTokenName : (state,action: PayloadAction<any>) => {
+      state.walletTokenName =  action.payload;
+    },
     resetWalletState: () => initialState,
   },
 });
@@ -40,6 +45,7 @@ export const {
   setWalletAddress,
   setWalletBalance,
   setLitNodeClient,
+  setTokenName,
   resetWalletState,
 } = walletSlice.actions;
 

@@ -3,7 +3,8 @@ import { ethers } from "ethers";
 import { useSDK } from "@metamask/sdk-react"; // Updated hook from MetaMask SDK
 import { initLitClient } from "../_helpers/LitNodeClient"; // Lit Protocol helper
 import { useDispatch, useSelector } from "react-redux";
-import { setWalletConnected, setWalletAddress, setWalletBalance, setLitNodeClient } from "../_helpers/walletSlice"; // Import Redux actions
+import { setChain } from "../_helpers/chainSlice";
+import { setWalletConnected, setWalletAddress, setWalletBalance, setLitNodeClient ,setTokenName } from "../_helpers/walletSlice"; // Import Redux actions
 import { RootState, AppDispatch } from "../redux/store"; // Import types
 
 interface WalletComponentProps {
@@ -12,29 +13,86 @@ interface WalletComponentProps {
 
 const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
   const dispatch = useDispatch<AppDispatch>();
+  
 
   // Use the latest MetaMask SDK hook
   const { sdk, connected, connecting, provider, chainId } = useSDK();
+
+
+
 
   // Access wallet state from Redux
   const { walletConnected, walletAddress, walletBalance, litNodeClient } = useSelector(
     (state: RootState) => state.wallet
   );
 
+  // const {  chainName, chainToken } = useSelector((state: RootState) => state.chain);
+
   // MetaMask Wallet Connection and Lit Protocol initialization
+
+
+  // const getChainToken = (chainId: number) => {
+  //   console.log("chainId",chainId
+  //   )
+  //   switch (chainId) {
+  //     case '0x1':
+  //       return 'ETH';
+  //     case '0x89':
+  //       return 'MATIC';
+  //     case 296 :
+  //       return 'HBAR';
+  //     default:
+  //       return `Unknown Network (Chain ID: ${chainId})`;
+  //   }
+  // };
+
+  const getChainToken = (chainId: string) => {
+    switch (chainId) {
+      case '0x13882':
+        return 'MATIC';
+      case '0x128':
+        return 'HBAR';
+      default:
+        return `Unknown Network (Chain ID: ${chainId})`;
+    }
+  };
+
+  useEffect(() => {
+    connectWallet()
+  },[chainId, walletAddress, sdk, connected, connecting, provider, chainId ])
+  
   const connectWallet = async () => {
     try {
       if (sdk) {
         const accounts = await sdk.connect(); // Use the updated connect method
         const account = accounts?.[0]; // Get the first account
+        console.log("account", accounts?.[0])
+        console.log("account----->", account)
         dispatch(setWalletAddress(account)); // Set wallet address
         dispatch(setWalletConnected(true)); // Set connection state
 
         if (provider) {
           const ethersProvider = new ethers.providers.Web3Provider(provider as any); // Explicitly cast to 'any'
+          console.log("ethersProviders", ethersProvider)
           const balance = await ethersProvider.getBalance(account); // Get wallet balance
+          console.log("balane")
           const formattedBalance = ethers.utils.formatEther(balance); // Format balance
           dispatch(setWalletBalance(formattedBalance)); // Set balance
+
+          const network = await ethersProvider.getNetwork();
+          const chainId = network.chainId; 
+
+          console.log("Chain ID----------->:", chainId); // Log chainId for debugging
+          // const chainToken = getChainToken(chainId!)
+          // console.log("ChainToken---------------->", chainToken)
+          // console.log("chainToken", chainToken)
+
+          // Dispatch chain information with chainId and token
+          // dispatch(setChain({
+          //   chainId,
+          //   chainName: null,
+          //   chainToken: null
+          // }));
         } else {
           console.error("MetaMask provider is not available.");
         }
@@ -46,19 +104,24 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
         // Notify parent component that MetaMask wallet is connected
         onWalletConnected(account);
       } else {
-        alert("MetaMask SDK is not initialized.");
+        // alert("MetaMask SDK is not initialized.");
       }
     } catch (err) {
       console.error("Failed to connect wallet:", err);
     }
   };
 
+  useEffect(()=> {
+    console.log("walletBalance", walletBalance)
+    dispatch(setTokenName(getChainToken(chainId!)))
+  },[chainId])
+
   return (
     <div>
       {walletConnected ? (
         <div>
           <p>Wallet Address: {walletAddress}</p>
-          <p>Balance: {walletBalance} ETH</p>
+          <p>Balance: {walletBalance} {getChainToken(chainId!)}</p>
         </div>
       ) : (
         <div>
