@@ -41,7 +41,7 @@ npx hardhat run ./scripts/vehicleRegister.ts --network hedera
 
 ### Berachain Bartio:
 
-        npx hardhat ignition deploy ./ignition/modules/VehicleManagement.ts --network barachain_bartiobarachain_bartio
+        npx hardhat ignition deploy ./ignition/modules/VehicleManagement.ts --network barachain_bartio
         npx hardhat ignition deploy ./ignition/modules/PolicyManagement.ts --network barachain_bartio
 
 ## Add User Vehicles:
@@ -81,3 +81,7 @@ npx hardhat run ./scripts/vehicleRegister.ts --network hedera
     npx hardhat run ./scripts/vehicleRegister.ts 
 
     if provider is for Hedera, then this will register vehicles on Hedera.
+
+### Add Quotation
+
+    npx hardhat run ./PolicyManagementService.ts

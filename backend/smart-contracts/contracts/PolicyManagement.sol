@@ -107,6 +107,12 @@ contract PolicyManagement {
         owner = payable(msg.sender);
     }
 
+    // Fallback function must be declared as external.
+    fallback() external payable {    }
+
+    // Receive is a variant of fallback that is triggered when msg.data is empty
+    receive() external payable {    }
+
     // Function to deposit Ether into this contract.
     // Call this function along with some Ether.
     // The balance of this contract will be automatically updated.

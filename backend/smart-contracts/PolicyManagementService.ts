@@ -64,7 +64,8 @@ export class PolicyManagementService {
 
   async getQuotations(chainId: number): Promise<Quotation[]> {
     const contract = this.getContract(chainId);
-    const tx = await contract.getQuotations(); 
+    const tx = await contract.quotations(1); 
+    console.log({tx})
     return tx;
   }
 
@@ -144,6 +145,13 @@ const networks: NetworkConfig[] = [
     contractAddress: `${process.env.POLICY_CONTRACT_ADDRESS}`, // Contract address on Polygon Amoy
     privateKey: `${process.env.PRIVATE_KEY}`
   },
+  {
+    chainId: 80084,
+    name: 'Berachain bArtio',
+    rpcUrl: `${process.env.BERACHAIN_RPC_URL}`,
+    contractAddress: `${process.env.BERACHAIN_POLICY_CONTRACT_ADDRESS}`, // Contract address on Berachain bArtio
+    privateKey: `${process.env.BERACHAIN_PRIVATE_KEY}`
+  },
   // Add more networks as needed
 ];
 // Example usage
@@ -154,10 +162,10 @@ export async function main() {
 
   try {
     // Add a quotation on Hedera Testnet
-    const quotationIdEth = await policyManagement.addQuotation(296, 200, 1000, 296);
-    console.log('Added quotation on Hedera Testnet:', quotationIdEth);
-    // const quotationIdEth1 = await policyManagement.addQuotation(296, 300, 2000, 296);
-    // console.log('Added quotation on Hedera Testnet:', quotationIdEth1);
+    // const quotationIdEth = await policyManagement.addQuotation(80084, 200, 1000, 80084);
+    // console.log('Added quotation on Berachain bArtio:', quotationIdEth);
+    const quotationIdEth1 = await policyManagement.addQuotation(296, 300, 2000, 296);
+    console.log('Added quotation on Hedera Testnet:', quotationIdEth1);
     // const quotationIdEth2 = await policyManagement.addQuotation(296, 400, 3000, 296);
     // console.log('Added quotation on Hedera Testnet:', quotationIdEth2);
     // const quotationIdEth3 = await policyManagement.addQuotation(296, 500, 2000, 296);
@@ -168,9 +176,10 @@ export async function main() {
     // console.log('Added quotation on Polygon Amoy:', quotationIdEth1);
     // const quotations = await policyManagement.getQuotations(80002);
     // console.log('Added quotation on Hedera Testnet:', quotations);
-     const quotations = await policyManagement.getQuotations(296);
+    //  const quotations = await policyManagement.getQuotations(80084);
+    //   console.log('Added quotation on Hedera Testnet:', quotations);
+    const quotations = await policyManagement.getQuotations(296);
       console.log('Added quotation on Hedera Testnet:', quotations);
-    
     // Create a policy on Polygon Amoy
     // const policyIdPolygon = await policyManagement.createPolicy(80002, 123, [1]); // Assuming quotation ID 1 exists on Polygon
     // console.log('Created policy on Polygon:', policyIdPolygon);
