@@ -1,6 +1,6 @@
 // src/redux/chainSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { act } from 'react';
+
 
 // Define the initial state interface
 export interface ChainState {

@@ -1,6 +1,5 @@
 import React from 'react';
 import InsuranceLogo from '../../src/assets/insurance.png'
-import BeraChainLogo from '../../src/assets/bera.png'
 
 const InsuranceIcon: React.FC = () => {
   return (
