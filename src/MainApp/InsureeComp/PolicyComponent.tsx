@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { networks, PolicyManagementService } from '../../../backend/smart-contracts/PolicyManagementService';
+// import { networks, PolicyManagementService } from '../../../backend/smart-contracts/PolicyManagementService';
 
-const createClaim = async (chainId: number, policyId: number, claimAmount: number, reason: string) => {
-  const policyManagement = new PolicyManagementService(networks);
-  const claimId = await policyManagement.requestClaim(chainId,policyId,claimAmount,reason);
-  const claimDetails = await policyManagement.getClaim(chainId, claimId);
-  return claimDetails;
-}
+// const createClaim = async (chainId: number, policyId: number, claimAmount: number, reason: string) => {
+//   const policyManagement = new PolicyManagementService(networks);
+//   const claimId = await policyManagement.requestClaim(chainId,policyId,claimAmount,reason);
+//   const claimDetails = await policyManagement.getClaim(chainId, claimId);
+//   return claimDetails;
+// }
 
 const PolicyComponent: React.FC = () => {
   const navigate = useNavigate()
@@ -16,7 +16,8 @@ const PolicyComponent: React.FC = () => {
     <div className="flex items-center justify-between w-full">
       <div className="flex items-center space-x-2">
         <p className="text-sm font-semibold">Policy Id:</p>
-        <p onClick={(createClaim(80002, 1, 500, 'Car accident')) => navigate('createClaim')} className="text-sm">claimDetails.claimId</p>
+        {/* <p onClick={(createClaim(80002, 1, 500, 'Car accident')) => navigate('createClaim')} className="text-sm">claimDetails.claimId</p> */}
+        <p onClick={() => navigate('createClaim')} className="text-sm">claimDetails.claimId</p>
       </div>
       <div className="flex items-center space-x-2">
         <p className="text-sm font-semibold">Status:</p>

@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { ethers } from "ethers";
 import { useSDK } from "@metamask/sdk-react"; // Updated hook from MetaMask SDK
 import { initLitClient } from "../_helpers/LitNodeClient"; // Lit Protocol helper
-import { signInWithGoogle, authenticateWithGoogle } from "../_helpers/litGoogleAuth"; // Google OAuth helpers
+import { useDispatch, useSelector } from "react-redux";
+import { setWalletConnected, setWalletAddress, setWalletBalance, setLitNodeClient } from "../_helpers/walletSlice"; // Import Redux actions
+import { RootState, AppDispatch } from "../redux/store"; // Import types
 
 interface WalletComponentProps {
   onWalletConnected: (walletAddress: string) => void; // Callback to notify parent when wallet is connected
 }
 
 const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [walletBalance, setWalletBalance] = useState<string | null>(null);
-  const [litNodeClient, setLitNodeClient] = useState<any>(null); // LitNodeClient state
+  const dispatch = useDispatch<AppDispatch>();
 
   // Use the latest MetaMask SDK hook
   const { sdk, connected, connecting, provider, chainId } = useSDK();
 
-  console.log("LitNodeClient", litNodeClient)
-  console.log("connected", connected)
-  console.log("chainId", chainId)
+  // Access wallet state from Redux
+  const { walletConnected, walletAddress, walletBalance, litNodeClient } = useSelector(
+    (state: RootState) => state.wallet
+  );
 
   // MetaMask Wallet Connection and Lit Protocol initialization
   const connectWallet = async () => {
@@ -27,21 +27,21 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
       if (sdk) {
         const accounts = await sdk.connect(); // Use the updated connect method
         const account = accounts?.[0]; // Get the first account
-        setWalletAddress(account); // Set wallet address
-        setWalletConnected(true); // Set connection state
+        dispatch(setWalletAddress(account)); // Set wallet address
+        dispatch(setWalletConnected(true)); // Set connection state
 
         if (provider) {
-          const ethersProvider = new ethers.providers.Web3Provider(provider as any); // Explicitly cast to 'any' since it's guaranteed to be an ExternalProvider
+          const ethersProvider = new ethers.providers.Web3Provider(provider as any); // Explicitly cast to 'any'
           const balance = await ethersProvider.getBalance(account); // Get wallet balance
           const formattedBalance = ethers.utils.formatEther(balance); // Format balance
-          setWalletBalance(formattedBalance); // Set balance
+          dispatch(setWalletBalance(formattedBalance)); // Set balance
         } else {
           console.error("MetaMask provider is not available.");
         }
 
         // Initialize LitNodeClient using the helper function
         const litClient = await initLitClient();
-        setLitNodeClient(litClient);
+        dispatch(setLitNodeClient(litClient));
 
         // Notify parent component that MetaMask wallet is connected
         onWalletConnected(account);
@@ -52,73 +52,6 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
       console.error("Failed to connect wallet:", err);
     }
   };
-
-  // Google OAuth Connection via Lit Protocol
-  const connectGoogle = async () => {
-    // "http://localhost:3000/wallet-connect"
-
-    const redirectUri = 'http://localhost:3000/wallet-connect';
-
-    try {
-      // const redirectUri = window.location.href; // Redirect URI for Google OAuth
-      // console.log("redirectUri", redirectUri)
-      await signInWithGoogle(redirectUri); // Redirect user to Google sign-in page
-    } catch (error) {
-      console.error("Google sign-in failed:", error);
-    }
-  };
-
-  // Handle Google Authentication after the redirect
-  // const handleGoogleAuth = async () => {
-  //   try {
-  //     const redirectUri = window.location.href; // The same redirect URI
-  //     const authMethod = await authenticateWithGoogle(redirectUri); // Authenticate with Google
-
-  //     if (authMethod) {
-  //       console.log("Google Auth Method:", authMethod);
-
-  //       // Initialize LitNodeClient
-  //       const litClient = await initLitClient();
-  //       setLitNodeClient(litClient);
-
-  //       // Notify parent component that Google authentication was successful
-  //       onWalletConnected("google-auth"); // Use "google-auth" to indicate Google authentication
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to authenticate with Google:", error);
-  //   }
-  // };
-
-  const handleGoogleAuth = async () => {
-    try {
-      // const redirectUri = window.location.href;
-      const redirectUri = 'http://localhost:3000/wallet-connect';
-      const pkp = await authenticateWithGoogle(redirectUri); // Authenticate with Google and fetch PKP
-
-      if (pkp) {
-        console.log("Google Auth PKP:", pkp);
-
-        // The PKP contains an Ethereum address-like format that we can use
-        const ethAddress = pkp.ethAddress;
-        setWalletAddress(ethAddress); // Set wallet address as the PKP Ethereum address
-        setWalletConnected(true);
-
-        const litClient = await initLitClient();
-        setLitNodeClient(litClient);
-
-        // Notify parent component that Google authentication was successful with a wallet address
-        onWalletConnected(ethAddress);
-      }
-    } catch (error) {
-      console.error("Failed to authenticate with Google:", error);
-    }
-  };
-
-
-  // Call this function after the page reloads from the Google OAuth redirect
-  useEffect(() => {
-    handleGoogleAuth();
-  }, []);
 
   return (
     <div>
@@ -136,12 +69,6 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
           >
             {connecting ? "Connecting..." : "Connect MetaMask"}
           </button>
-          <button
-            onClick={connectGoogle}
-            className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 mt-4"
-          >
-            Sign in with Google
-          </button>
         </div>
       )}
     </div>
@@ -149,6 +76,159 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
 };
 
 export default WalletComponent;
+
+
+// import React, { useState, useEffect } from "react";
+// import { ethers } from "ethers";
+// import { useSDK } from "@metamask/sdk-react"; // Updated hook from MetaMask SDK
+// import { initLitClient } from "../_helpers/LitNodeClient"; // Lit Protocol helper
+// import { signInWithGoogle, authenticateWithGoogle } from "../_helpers/litGoogleAuth"; // Google OAuth helpers
+
+// interface WalletComponentProps {
+//   onWalletConnected: (walletAddress: string) => void; // Callback to notify parent when wallet is connected
+// }
+
+// const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
+//   const [walletConnected, setWalletConnected] = useState(false);
+//   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+//   const [walletBalance, setWalletBalance] = useState<string | null>(null);
+//   const [litNodeClient, setLitNodeClient] = useState<any>(null); // LitNodeClient state
+
+//   // Use the latest MetaMask SDK hook
+//   const { sdk, connected, connecting, provider, chainId } = useSDK();
+
+//   console.log("LitNodeClient", litNodeClient)
+//   console.log("connected", connected)
+//   console.log("chainId", chainId)
+
+//   // MetaMask Wallet Connection and Lit Protocol initialization
+//   const connectWallet = async () => {
+//     try {
+//       if (sdk) {
+//         const accounts = await sdk.connect(); // Use the updated connect method
+//         const account = accounts?.[0]; // Get the first account
+//         setWalletAddress(account); // Set wallet address
+//         setWalletConnected(true); // Set connection state
+
+//         if (provider) {
+//           const ethersProvider = new ethers.providers.Web3Provider(provider as any); // Explicitly cast to 'any' since it's guaranteed to be an ExternalProvider
+//           const balance = await ethersProvider.getBalance(account); // Get wallet balance
+//           const formattedBalance = ethers.utils.formatEther(balance); // Format balance
+//           setWalletBalance(formattedBalance); // Set balance
+//         } else {
+//           console.error("MetaMask provider is not available.");
+//         }
+
+//         // Initialize LitNodeClient using the helper function
+//         const litClient = await initLitClient();
+//         setLitNodeClient(litClient);
+
+//         // Notify parent component that MetaMask wallet is connected
+//         onWalletConnected(account);
+//       } else {
+//         alert("MetaMask SDK is not initialized.");
+//       }
+//     } catch (err) {
+//       console.error("Failed to connect wallet:", err);
+//     }
+//   };
+
+//   // Google OAuth Connection via Lit Protocol
+//   const connectGoogle = async () => {
+//     // "http://localhost:3000/wallet-connect"
+
+//     const redirectUri = 'http://localhost:3000/wallet-connect';
+
+//     try {
+//       // const redirectUri = window.location.href; // Redirect URI for Google OAuth
+//       // console.log("redirectUri", redirectUri)
+//       await signInWithGoogle(redirectUri); // Redirect user to Google sign-in page
+//     } catch (error) {
+//       console.error("Google sign-in failed:", error);
+//     }
+//   };
+
+//   // Handle Google Authentication after the redirect
+//   // const handleGoogleAuth = async () => {
+//   //   try {
+//   //     const redirectUri = window.location.href; // The same redirect URI
+//   //     const authMethod = await authenticateWithGoogle(redirectUri); // Authenticate with Google
+
+//   //     if (authMethod) {
+//   //       console.log("Google Auth Method:", authMethod);
+
+//   //       // Initialize LitNodeClient
+//   //       const litClient = await initLitClient();
+//   //       setLitNodeClient(litClient);
+
+//   //       // Notify parent component that Google authentication was successful
+//   //       onWalletConnected("google-auth"); // Use "google-auth" to indicate Google authentication
+//   //     }
+//   //   } catch (error) {
+//   //     console.error("Failed to authenticate with Google:", error);
+//   //   }
+//   // };
+
+//   const handleGoogleAuth = async () => {
+//     try {
+//       // const redirectUri = window.location.href;
+//       const redirectUri = 'http://localhost:3000/wallet-connect';
+//       const pkp = await authenticateWithGoogle(redirectUri); // Authenticate with Google and fetch PKP
+
+//       if (pkp) {
+//         console.log("Google Auth PKP:", pkp);
+
+//         // The PKP contains an Ethereum address-like format that we can use
+//         const ethAddress = pkp.ethAddress;
+//         setWalletAddress(ethAddress); // Set wallet address as the PKP Ethereum address
+//         setWalletConnected(true);
+
+//         const litClient = await initLitClient();
+//         setLitNodeClient(litClient);
+
+//         // Notify parent component that Google authentication was successful with a wallet address
+//         onWalletConnected(ethAddress);
+//       }
+//     } catch (error) {
+//       console.error("Failed to authenticate with Google:", error);
+//     }
+//   };
+
+
+//   // Call this function after the page reloads from the Google OAuth redirect
+//   useEffect(() => {
+//     handleGoogleAuth();
+//   }, []);
+
+//   return (
+//     <div>
+//       {walletConnected ? (
+//         <div>
+//           <p>Wallet Address: {walletAddress}</p>
+//           <p>Balance: {walletBalance} ETH</p>
+//         </div>
+//       ) : (
+//         <div>
+//           <button
+//             onClick={connectWallet}
+//             className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600"
+//             disabled={connecting}
+//           >
+//             {connecting ? "Connecting..." : "Connect MetaMask"}
+//           </button>
+//           <button
+//             onClick={connectGoogle}
+//             className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600 mt-4"
+//           >
+//             Sign in with Google
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default WalletComponent;
 
 
 // import React, { useState, useEffect } from "react";
