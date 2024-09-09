@@ -13,7 +13,15 @@ interface Insurer {
   coverage: BigNumber;
 }
 
+interface policyquotation {
+  
+}
+
+
+
 const InsurerTable: React.FC<InsurerTableProps> = ({ policyquotation, coverageLimit }) => {
+  console.log("policyquotation[0]--------------->",policyquotation);
+  
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [totalSelectedCoverage, setTotalSelectedCoverage] = useState<number>(0);
   const [totalPremium, setTotalPremium] = useState<number>(0);
@@ -98,9 +106,11 @@ const InsurerTable: React.FC<InsurerTableProps> = ({ policyquotation, coverageLi
           </thead>
           <tbody>
             {/* Map through policyquotation and render rows */}
-            {policyquotation &&
-              policyquotation.map((quotation: Insurer) => (
-                <tr
+            {/* {policyquotation &&
+              policyquotation?.map((quotation: Insurer) =>{
+                console.log("quotation-------this----------------------------------------->",quotation)
+                return (
+                  <tr
                   key={quotation.insurer}
                   className={`border-b cursor-pointer ${
                     selectedRows.includes(quotation.insurer)
@@ -117,13 +127,67 @@ const InsurerTable: React.FC<InsurerTableProps> = ({ policyquotation, coverageLi
                   }
                 >
                   <td className="p-3 text-blue-500 whitespace-nowrap">
-                    {quotation.insurer.substring(0, 7)}...
+                    {quotation?.insurer?.substring(0, 7)}...
                   </td>
                   <td className="p-3">{quotation.chain.toNumber()}</td>
                   <td className="p-3">{quotation.premium.toNumber()}</td>
                   <td className="p-3">{quotation.coverage.toNumber()}</td>
                 </tr>
-              ))}
+
+                )
+
+              }
+
+                
+                // <tr
+                //   key={quotation.insurer}
+                //   className={`border-b cursor-pointer ${
+                //     selectedRows.includes(quotation.insurer)
+                //       ? 'bg-blue-100'
+                //       : 'bg-white'
+                //   }`}
+                //   // CHANGED: Add row to selectedRows in the correct order
+                //   onClick={() =>
+                //     handleRowClick(
+                //       quotation.insurer,
+                //       quotation.coverage.toNumber(),
+                //       quotation.premium.toNumber()
+                //     )
+                //   }
+                // >
+                //   <td className="p-3 text-blue-500 whitespace-nowrap">
+                //     {quotation?.insurer?.substring(0, 7)}...
+                //   </td>
+                //   <td className="p-3">{quotation.chain.toNumber()}</td>
+                //   <td className="p-3">{quotation.premium.toNumber()}</td>
+                //   <td className="p-3">{quotation.coverage.toNumber()}</td>
+                // </tr>
+              )} */}
+
+                <tr
+                  key={policyquotation.insurer}
+                  className={`border-b cursor-pointer ${
+                    selectedRows.includes(policyquotation.insurer)
+                      ? 'bg-blue-100'
+                      : 'bg-white'
+                  }`}
+                  // CHANGED: Add row to selectedRows in the correct order
+                  onClick={() =>
+                    handleRowClick(
+                      policyquotation.insurer,
+                      policyquotation.coverage.toNumber(),
+                      policyquotation.premium.toNumber()
+                    )
+                  }
+                >
+                  <td className="p-3 text-blue-500 whitespace-nowrap">
+                    {policyquotation?.insurer?.substring(0, 7)}...
+                  </td>
+                  <td className="p-3">{policyquotation.chain.toNumber()}</td>
+                  <td className="p-3">{policyquotation.premium.toNumber()}</td>
+                  <td className="p-3">{policyquotation.coverage.toNumber()}</td>
+                </tr>
+
           </tbody>
         </table>
       </div>
@@ -162,7 +226,7 @@ const InsurerTable: React.FC<InsurerTableProps> = ({ policyquotation, coverageLi
                   )
                 }
               >
-                {quotation.insurer.substring(0,7)}
+                {quotation?.insurer?.substring(0,7)}...
               </div>
             ))}
           </div>

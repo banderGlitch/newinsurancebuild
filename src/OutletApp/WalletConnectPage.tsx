@@ -17,10 +17,6 @@ const WalletConnectPage: React.FC<WalletConnectPageProps> = ({ telegramUser, set
     navigate('/'); // Redirect to home page
   };
   
-//   useEffect(() => {
-//     console.log("console was called!!")
-//     onWalletConnected("asdasdasdasd")
-//   },[telegramUser])
 
   return (
     <div className="flex flex-col justify-between items-center min-h-screen p-6">
