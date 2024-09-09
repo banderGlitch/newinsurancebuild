@@ -1,13 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { networks, PolicyManagementService } from '../../../backend/smart-contracts/PolicyManagementService';
 
-// const createClaim = async (chainId: number, policyId: number, claimAmount: number, reason: string) => {
-//   const policyManagement = new PolicyManagementService(networks);
-//   const claimId = await policyManagement.requestClaim(chainId,policyId,claimAmount,reason);
-//   const claimDetails = await policyManagement.getClaim(chainId, claimId);
-//   return claimDetails;
-// }
 
 const PolicyComponent: React.FC = () => {
   const navigate = useNavigate()
@@ -31,24 +24,6 @@ const PolicyComponent: React.FC = () => {
       </div>
     </div>
   </div>
-    // <div className="bg-white p-4 rounded-lg shadow-md w-full flex justify-between items-center border">
-    //   <div className="flex-grow">
-    //     <p className="text-sm font-semibold">Policy Id:</p>
-    //     <p className="text-lg">IL2345</p>
-    //   </div>
-    //   <div className="flex-grow text-right">
-    //     <p className="text-sm font-semibold">Status</p>
-    //     <p className="text-lg text-red-500 font-bold">InActive</p>
-    //   </div>
-    //   <div className="flex-none">
-    //     {/* Placeholder for the icon on the right */}
-    //     <div className="rounded-full bg-gray-300 w-8 h-8 flex items-center justify-center">
-    //       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    //         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-    //       </svg>
-    //     </div>
-    //   </div>
-    // </div>
   );
 };
 

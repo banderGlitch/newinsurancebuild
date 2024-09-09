@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount, useBalance, useChainId, useConnect, useDisconnect } from "wagmi";
 import { injected } from "wagmi/connectors";
 
@@ -6,31 +6,62 @@ interface WalletComponentProps {
   onWalletConnected: (walletAddress: string) => void;
 }
 
+interface ChainInfo {
+  name: string;
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+}
+
 const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { connect, isPending: isConnecting, error: connectError } = useConnect();
   const { disconnect } = useDisconnect();
-  const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
-    address: address,
+  const [chainInfo, setChainInfo] = useState<ChainInfo>({
+    name: 'Unknown',
+    nativeCurrency: { name: 'Unknown', symbol: 'Unknown', decimals: 18 }
   });
 
-  const getChainToken = (chainId: number) => {
-    switch (chainId) {
-      case 80001: // Mumbai testnet
-        return 'MATIC';
-      case 296: // Hedera testnet
-        return 'HBAR';
-      default:
-        return `Unknown Network (Chain ID: ${chainId})`;
-    }
-  };
+  console.log("chainId--------->",chainId)
+
+  const { data: balanceData, isLoading: isBalanceLoading, refetch: refetchBalance } = useBalance({
+    address: address,
+    chainId: chainId,
+  });
 
   useEffect(() => {
     if (isConnected && address) {
       onWalletConnected(address);
     }
   }, [isConnected, address, onWalletConnected]);
+
+  useEffect(() => {
+    const getChainInfo = (id: number): ChainInfo => {
+      switch (id) {
+        case 296:
+          return {
+            name: 'Hedera Testnet',
+            nativeCurrency: { name: 'HBAR', symbol: 'HBAR', decimals: 8 }
+          };
+        case 1442:
+          return {
+            name: 'Polygon zkEVM Testnet (Amoy)',
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 }
+          };
+        default:
+          return {
+            name: `Unknown Network (${id})`,
+            nativeCurrency: { name: 'Unknown', symbol: 'Unknown', decimals: 18 }
+          };
+      }
+    };
+
+    setChainInfo(getChainInfo(chainId));
+    refetchBalance();
+  }, [chainId, refetchBalance]);
 
   const handleConnect = () => {
     connect({ connector: injected() });
@@ -44,9 +75,10 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
           <p>
             Balance: {isBalanceLoading 
               ? "Loading..." 
-              : `${balanceData?.formatted} ${balanceData?.symbol || getChainToken(chainId)}`
+              : `${balanceData?.formatted} ${chainInfo.nativeCurrency.symbol}`
             }
           </p>
+          <p>Network: {chainInfo.name}</p>
           <button
             onClick={() => disconnect()}
             className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600"
@@ -71,6 +103,312 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
 };
 
 export default WalletComponent;
+
+// import React, { useEffect } from "react";
+// import { useAccount, useBalance, useChainId, useConnect, useDisconnect, usePublicClient } from "wagmi";
+// import { injected } from "wagmi/connectors";
+
+// interface WalletComponentProps {
+//   onWalletConnected: (walletAddress: string) => void;
+// }
+
+
+// const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
+//   const { address, isConnected } = useAccount();
+//   const chainId = useChainId();
+//   const publicClient = usePublicClient();
+//   const { connect, isPending: isConnecting, error: connectError } = useConnect();
+//   const { disconnect } = useDisconnect();
+//   const { data: balanceData, isLoading: isBalanceLoading, refetch: refetchBalance } = useBalance({
+//     address: address,
+//   });
+
+//   useEffect(() => {
+//     if (isConnected && address) {
+//       onWalletConnected(address);
+//     }
+//   }, [isConnected, address, onWalletConnected]);
+
+//   useEffect(() => {
+//     refetchBalance();
+//   }, [chainId, refetchBalance]);
+
+//   const handleConnect = () => {
+//     connect({ connector: injected() });
+//   };
+
+//   const getChainInfo = () => {
+//     if (!publicClient) {
+//       return { name: 'Unknown', nativeCurrency: { symbol: 'Unknown' } };
+//     }
+//     return {
+//       name: publicClient.chain.name,
+//       nativeCurrency: publicClient.chain.nativeCurrency
+//     };
+//   };
+
+//   const chainInfo = getChainInfo();
+
+//   return (
+//     <div>
+//       {isConnected ? (
+//         <div>
+//           <p>Wallet Address: {address}</p>
+//           <p>
+//             Balance: {isBalanceLoading 
+//               ? "Loading..." 
+//               : `${balanceData?.formatted} ${chainInfo.nativeCurrency.symbol}`
+//             }
+//           </p>
+//           <p>Network: {chainInfo.name}</p>
+//           <button
+//             onClick={() => disconnect()}
+//             className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600"
+//           >
+//             Disconnect
+//           </button>
+//         </div>
+//       ) : (
+//         <div>
+//           <button
+//             onClick={handleConnect}
+//             className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600"
+//             disabled={isConnecting}
+//           >
+//             {isConnecting ? "Connecting..." : "Connect Wallet"}
+//           </button>
+//           {connectError && <p className="text-red-500 mt-2">Error: {connectError.message}</p>}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default WalletComponent;
+
+// import React, { useEffect } from "react";
+// import { useAccount, useBalance, useChainId, useConnect, useDisconnect, usePublicClient } from "wagmi";
+// import { injected } from "wagmi/connectors";
+
+// interface WalletComponentProps {
+//   onWalletConnected: (walletAddress: string) => void;
+// }
+
+// const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
+//   const { address, isConnected } = useAccount();
+//   const chainId = useChainId();
+//   const publicClient = usePublicClient();
+//   const { connect, isPending: isConnecting, error: connectError } = useConnect();
+//   const { disconnect } = useDisconnect();
+//   const { data: balanceData, isLoading: isBalanceLoading, refetch: refetchBalance } = useBalance({
+//     address: address,
+//   });
+
+//   useEffect(() => {
+//     if (isConnected && address) {
+//       onWalletConnected(address);
+//     }
+//   }, [isConnected, address, onWalletConnected]);
+
+//   useEffect(() => {
+//     refetchBalance();
+//   }, [chainId, refetchBalance]);
+
+//   const handleConnect = () => {
+//     connect({ connector: injected() });
+//   };
+
+//   const getChainInfo = () => {
+//     const chainInfo = publicClient.chain;
+//     return {
+//       name: chainInfo.name,
+//       nativeCurrency: chainInfo.nativeCurrency
+//     };
+//   };
+
+//   const chainInfo = getChainInfo();
+
+//   return (
+//     <div>
+//       {isConnected ? (
+//         <div>
+//           <p>Wallet Address: {address}</p>
+//           <p>
+//             Balance: {isBalanceLoading 
+//               ? "Loading..." 
+//               : `${balanceData?.formatted} ${chainInfo.nativeCurrency.symbol || 'Unknown'}`
+//             }
+//           </p>
+//           <p>Network: {chainInfo.name || 'Unknown'}</p>
+//           <button
+//             onClick={() => disconnect()}
+//             className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600"
+//           >
+//             Disconnect
+//           </button>
+//         </div>
+//       ) : (
+//         <div>
+//           <button
+//             onClick={handleConnect}
+//             className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600"
+//             disabled={isConnecting}
+//           >
+//             {isConnecting ? "Connecting..." : "Connect Wallet"}
+//           </button>
+//           {connectError && <p className="text-red-500 mt-2">Error: {connectError.message}</p>}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default WalletComponent;
+// import React, { useEffect } from "react";
+// import { useAccount, useBalance, useNetwork, useConnect, useDisconnect } from "wagmi";
+// import { injected } from "wagmi/connectors";
+
+// interface WalletComponentProps {
+//   onWalletConnected: (walletAddress: string) => void;
+// }
+
+// const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
+//   const { address, isConnected } = useAccount();
+//   const { chain } = useNetwork();
+//   const { connect, isPending: isConnecting, error: connectError } = useConnect();
+//   const { disconnect } = useDisconnect();
+//   const { data: balanceData, isLoading: isBalanceLoading, refetch: refetchBalance } = useBalance({
+//     address: address,
+//   });
+
+//   useEffect(() => {
+//     if (isConnected && address) {
+//       onWalletConnected(address);
+//     }
+//   }, [isConnected, address, onWalletConnected]);
+
+//   useEffect(() => {
+//     if (chain) {
+//       refetchBalance();
+//     }
+//   }, [chain, refetchBalance]);
+
+//   const handleConnect = () => {
+//     connect({ connector: injected() });
+//   };
+
+//   return (
+//     <div>
+//       {isConnected ? (
+//         <div>
+//           <p>Wallet Address: {address}</p>
+//           <p>
+//             Balance: {isBalanceLoading 
+//               ? "Loading..." 
+//               : `${balanceData?.formatted} ${chain?.nativeCurrency.symbol || 'Unknown'}`
+//             }
+//           </p>
+//           <p>Network: {chain?.name || 'Unknown'}</p>
+//           <button
+//             onClick={() => disconnect()}
+//             className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600"
+//           >
+//             Disconnect
+//           </button>
+//         </div>
+//       ) : (
+//         <div>
+//           <button
+//             onClick={handleConnect}
+//             className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600"
+//             disabled={isConnecting}
+//           >
+//             {isConnecting ? "Connecting..." : "Connect Wallet"}
+//           </button>
+//           {connectError && <p className="text-red-500 mt-2">Error: {connectError.message}</p>}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default WalletComponent;
+
+// import React, { useEffect } from "react";
+// import { useAccount, useBalance, useChainId, useConnect, useDisconnect } from "wagmi";
+// import { injected } from "wagmi/connectors";
+
+// interface WalletComponentProps {
+//   onWalletConnected: (walletAddress: string) => void;
+// }
+
+// const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
+//   const { address, isConnected } = useAccount();
+//   const chainId = useChainId();
+//   const { connect, isPending: isConnecting, error: connectError } = useConnect();
+//   const { disconnect } = useDisconnect();
+//   const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
+//     address: address,
+//   });
+
+//   const getChainToken = (chainId: number) => {
+//     switch (chainId) {
+//       case 80001: // Mumbai testnet
+//         return 'MATIC';
+//       case 296: // Hedera testnet
+//         return 'HBAR';
+//       default:
+//         return `Unknown Network (Chain ID: ${chainId})`;
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (isConnected && address) {
+//       onWalletConnected(address);
+//     }
+//   }, [isConnected, address, onWalletConnected]);
+
+//   const handleConnect = () => {
+//     connect({ connector: injected() });
+//   };
+
+
+
+//   return (
+//     <div>
+//       {isConnected ? (
+//         <div>
+//           <p>Wallet Address: {address}</p>
+//           <p>
+//             Balance: {isBalanceLoading 
+//               ? "Loading..." 
+//               : `${balanceData?.formatted} ${balanceData?.symbol || getChainToken(chainId)}`
+//             }
+//           </p>
+//           <button
+//             onClick={() => disconnect()}
+//             className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600"
+//           >
+//             Disconnect
+//           </button>
+//         </div>
+//       ) : (
+//         <div>
+//           <button
+//             onClick={handleConnect}
+//             className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600"
+//             disabled={isConnecting}
+//           >
+//             {isConnecting ? "Connecting..." : "Connect Wallet"}
+//           </button>
+//           {connectError && <p className="text-red-500 mt-2">Error: {connectError.message}</p>}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default WalletComponent;
 
 // import React, { useState, useEffect } from "react";
 // import { ethers } from "ethers";
