@@ -14,7 +14,6 @@ const WalletConnectPage: React.FC<WalletConnectPageProps> = ({ telegramUser, set
   const onWalletConnected = (walletAddress: string) => {
     console.log("walletAddress", walletAddress)
     setWalletStatus(true); // Update wallet status
-    navigate('/'); // Redirect to home page
   };
   
 

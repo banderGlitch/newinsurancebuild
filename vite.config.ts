@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ["buffer", "process", "util"],
+      include: ["buffer", "process", "util", "stream", "events"],
     }),
   ],
   define: {
@@ -18,7 +18,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // Remove the buffer alias
+      // You can add any necessary aliases here
     },
   },
   optimizeDeps: {
@@ -39,6 +39,9 @@ export default defineConfig({
     rollupOptions: {
       external: ['@simplewebauthn/browser'],
       plugins: [rollupNodePolyFill()],
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true,
     },
   },
   server: {

@@ -1,56 +1,25 @@
 import React, { useEffect } from "react";
-import { ethers } from "ethers";
-import { useSDK } from "@metamask/sdk-react"; // Updated hook from MetaMask SDK
-import { initLitClient } from "../_helpers/LitNodeClient"; // Lit Protocol helper
-import { useDispatch, useSelector } from "react-redux";
-import { setChain } from "../_helpers/chainSlice";
-import { setWalletConnected, setWalletAddress, setWalletBalance, setLitNodeClient ,setTokenName } from "../_helpers/walletSlice"; // Import Redux actions
-import { RootState, AppDispatch } from "../redux/store"; // Import types
+import { useAccount, useBalance, useChainId, useConnect, useDisconnect } from "wagmi";
+import { injected } from "wagmi/connectors";
 
 interface WalletComponentProps {
-  onWalletConnected: (walletAddress: string) => void; // Callback to notify parent when wallet is connected
+  onWalletConnected: (walletAddress: string) => void;
 }
 
 const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { connect, isPending: isConnecting, error: connectError } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
+    address: address,
+  });
 
-  // Use the latest MetaMask SDK hook
-  const { sdk, connected, connecting, provider, chainId } = useSDK();
-
-
-
-
-  // Access wallet state from Redux
-  const { walletConnected, walletAddress, walletBalance, litNodeClient } = useSelector(
-    (state: RootState) => state.wallet
-  );
-
-  // const {  chainName, chainToken } = useSelector((state: RootState) => state.chain);
-
-  // MetaMask Wallet Connection and Lit Protocol initialization
-
-
-  // const getChainToken = (chainId: number) => {
-  //   console.log("chainId",chainId
-  //   )
-  //   switch (chainId) {
-  //     case '0x1':
-  //       return 'ETH';
-  //     case '0x89':
-  //       return 'MATIC';
-  //     case 296 :
-  //       return 'HBAR';
-  //     default:
-  //       return `Unknown Network (Chain ID: ${chainId})`;
-  //   }
-  // };
-
-  const getChainToken = (chainId: string) => {
+  const getChainToken = (chainId: number) => {
     switch (chainId) {
-      case '0x13882':
+      case 80001: // Mumbai testnet
         return 'MATIC';
-      case '0x128':
+      case 296: // Hedera testnet
         return 'HBAR';
       default:
         return `Unknown Network (Chain ID: ${chainId})`;
@@ -58,80 +27,43 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
   };
 
   useEffect(() => {
-    connectWallet()
-  },[chainId, walletAddress, sdk, connected, connecting, provider, chainId ])
-  
-  const connectWallet = async () => {
-    try {
-      if (sdk) {
-        const accounts = await sdk.connect(); // Use the updated connect method
-        const account = accounts?.[0]; // Get the first account
-        console.log("account", accounts?.[0])
-        console.log("account----->", account)
-        dispatch(setWalletAddress(account)); // Set wallet address
-        dispatch(setWalletConnected(true)); // Set connection state
-
-        if (provider) {
-          const ethersProvider = new ethers.providers.Web3Provider(provider as any); // Explicitly cast to 'any'
-          console.log("ethersProviders", ethersProvider)
-          const balance = await ethersProvider.getBalance(account); // Get wallet balance
-          console.log("balane")
-          const formattedBalance = ethers.utils.formatEther(balance); // Format balance
-          dispatch(setWalletBalance(formattedBalance)); // Set balance
-
-          const network = await ethersProvider.getNetwork();
-          const chainId = network.chainId; 
-
-          console.log("Chain ID----------->:", chainId); // Log chainId for debugging
-          // const chainToken = getChainToken(chainId!)
-          // console.log("ChainToken---------------->", chainToken)
-          // console.log("chainToken", chainToken)
-
-          // Dispatch chain information with chainId and token
-          // dispatch(setChain({
-          //   chainId,
-          //   chainName: null,
-          //   chainToken: null
-          // }));
-        } else {
-          console.error("MetaMask provider is not available.");
-        }
-
-        // Initialize LitNodeClient using the helper function
-        const litClient = await initLitClient();
-        dispatch(setLitNodeClient(litClient));
-
-        // Notify parent component that MetaMask wallet is connected
-        onWalletConnected(account);
-      } else {
-        // alert("MetaMask SDK is not initialized.");
-      }
-    } catch (err) {
-      console.error("Failed to connect wallet:", err);
+    if (isConnected && address) {
+      onWalletConnected(address);
     }
-  };
+  }, [isConnected, address, onWalletConnected]);
 
-  useEffect(()=> {
-    console.log("walletBalance", walletBalance)
-    dispatch(setTokenName(getChainToken(chainId!)))
-  },[chainId])
+  const handleConnect = () => {
+    connect({ connector: injected() });
+  };
 
   return (
     <div>
-      {walletConnected ? (
+      {isConnected ? (
         <div>
-          <p>Wallet Address: {walletAddress}</p>
-          <p>Balance: {walletBalance} {getChainToken(chainId!)}</p>
+          <p>Wallet Address: {address}</p>
+          <p>
+            Balance: {isBalanceLoading 
+              ? "Loading..." 
+              : `${balanceData?.formatted} ${balanceData?.symbol || getChainToken(chainId)}`
+            }
+          </p>
+          <button
+            onClick={() => disconnect()}
+            className="bg-red-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-red-600"
+          >
+            Disconnect
+          </button>
         </div>
       ) : (
         <div>
           <button
-            onClick={connectWallet}
+            onClick={handleConnect}
             className="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600"
-            disabled={connecting}
+            disabled={isConnecting}
           >
-            {connecting ? "Connecting..." : "Connect MetaMask"}
+            {isConnecting ? "Connecting..." : "Connect Wallet"}
           </button>
+          {connectError && <p className="text-red-500 mt-2">Error: {connectError.message}</p>}
         </div>
       )}
     </div>
@@ -139,7 +71,6 @@ const WalletComponent: React.FC<WalletComponentProps> = ({ onWalletConnected }) 
 };
 
 export default WalletComponent;
-
 
 // import React, { useState, useEffect } from "react";
 // import { ethers } from "ethers";
